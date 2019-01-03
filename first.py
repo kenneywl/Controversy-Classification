@@ -1,4 +1,4 @@
-import xlrd
+import xlrd,pandas
 
 ti = xlrd.open_workbook("Titles.xlsx")
 
