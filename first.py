@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import xlrd
 from math import log
+=======
+import xlrd,pandas
+>>>>>>> d3d94e2f339c772f1d1e8009b9bbc39210412d82
 
 ti = xlrd.open_workbook("Titles.xlsx").sheet_by_index(0)
 su = xlrd.open_workbook("Summaries.xlsx").sheet_by_index(0)
