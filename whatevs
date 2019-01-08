@@ -1,8 +1,0 @@
-from math import log
-from scipy.stats import entropy
-
-en = log(6)-(9*log(3)+2*log(2)+2*log(2))/6
-
-ben = entropy([1,7,12])
-
-print(en,ben)
