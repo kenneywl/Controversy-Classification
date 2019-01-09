@@ -35,12 +35,12 @@ def knn_cross(factors,response,max_k=31):
 #The accuracies for each value of k from 1 to 30
 
 #For the summaries:
-acc = knn_cross(cd.summaries,cd.summaries_r)
-[print(i+1,acc[i]) for i in range(len(acc))]
-max_k = acc.index(max(acc))
-print("max k:",max_k+1,"\nmax acc:",max(acc))
+# acc = knn_cross(cd.summaries,cd.summaries_r)
+# [print(i+1,acc[i]) for i in range(len(acc))]
+# max_k = acc.index(max(acc))
+# print("max k:",max_k+1,"\nmax acc:",max(acc))
 
-#The k value is 8, with an average acc of .611
+#The k value is 11, with an average acc of .652
 #not terrible.
 
 #for titles:
@@ -49,6 +49,6 @@ acc = knn_cross(cd.titles,cd.titles_r)
 max_k = acc.index(max(acc))
 print("max k:",max_k+1,"\nmax acc:",max(acc))
 
-#The k value is 24 with an average value of .441
-#not much better than random. (which would be .33)
+#The k value is 22 with an average value of .496
+#somewhat better than random (which would be .33)
 #as there are three possible response categaores.

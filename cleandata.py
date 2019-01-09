@@ -99,6 +99,30 @@ summaries = fach_su.assign(StandardDevaition = ssd,Entropy=sen)
 summaries_r = scont
 #There we go. Summaries are the factors, summaries_r is responses.
 
+#We now remove the "unkowns" as we dont ahve any more data
+#to break the ties.
+
+unknns_s = []
+unknns_t = []
+for i in range(1000):
+	if summaries_r[i] == "unk":
+		unknns_s += [i]
+	if titles_r[i] == "unk":
+		unknns_t += [i]
+
+summaries = summaries.drop(unknns_s)
+summaries_r = summaries_r.drop(unknns_s)
+
+titles = titles.drop(unknns_t)
+titles_r = titles_r.drop(unknns_t)
+
+#reindex after the "drop" above.
+
+summaries.index = range(summaries.shape[0])
+summaries_r.index = range(summaries_r.shape[0])
+titles.index = range(titles.shape[0])
+titles_r.index = range(titles_r.shape[0])
+
 def info():
 	print("Factors for titles: 'titles' \nResponses for the titles:'titles_r")
 	print("Factors for summaries: 'summaries' \nResponses for the summaries:'summaries_r'")
