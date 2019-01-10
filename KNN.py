@@ -1,13 +1,17 @@
-import cleandata as cd
 import pandas as pd
-
-#cleandata holds all the cleaning and positioning for analysis.
-#The following has info:
-#cd.info()
 
 #For KNN
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
+
+#####################################################################
+#we can unpickle our data from cleandata.py
+
+summaries = pd.read_pickle("summaries.pkl")
+summaries_r = pd.read_pickle("summaries_r.pkl")
+titles = pd.read_pickle("titles.pkl")
+titles_r = pd.read_pickle("titles_r.pkl")
+
 ######################################################################
 #I wrote a function to do a 10 fold cross validation.
 #this function requires the "for KNN above."
@@ -40,16 +44,18 @@ from sklearn import metrics
 #The accuracies for each value of k from 1 to 30
 #for titles:
 
-# print("For the titles:")
-# knn_cross(cd.titles,cd.titles_r)
 
-#The k value is 22 with a acc of .499
+# print("For the titles:")
+# knn_cross(titles,titles_r)
+
+
+#The k value is 22 with a acc of .496
 #somewhat better than random (which would be .33)
 #as there are three possible response categaores.
 
 #For the summaries:
 # print("For the summaries:")
-# knn_cross(cd.summaries,cd.summaries_r)
+# knn_cross(summaries,summaries_r)
 
 #The k value is 11, with a acc of .652
 #not terrible.
@@ -57,118 +63,104 @@ from sklearn import metrics
 ##################################################################
 ##################################################################
 #Now lets explore the ROC curve. We use the max k values above.
+#The below function takes class probabilites and actual probs
+#and the category you are interested in and makes the roc data points.
 
+def cat_ROC(cat, pred_prob, actual_cat):
 
+	acc_m = []
+	for j in range(-1,102):
+		iss_li = []
+		for i in range(pp.shape[0]):
+			if pred_prob[i,1] >= j/100:
+				iss_li += [cat]
+			else:
+				iss_li += ["not " + cat]
+
+		truep_rate = 0
+		falsep_rate = 0
+		for i in range(pred_prob.shape[0]):
+			if iss_li[i] == actual_cat.iloc[i]:
+				truep_rate += 1
+
+			not_iss = iss_li[i] == cat
+			not_iss2 = actual_cat[i] != cat
+			if not_iss and not_iss2:
+				falsep_rate += 1
+
+		cat_list = list(actual_cat.value_counts().index)
+		cat_ind = cat_list.index(cat)
+
+		count = actual_cat.value_counts()
+
+		truep_rate /= count[cat_ind]
+		falsep_rate /= sum(count) - count[cat_ind]
+
+		acc_m += [(falsep_rate,truep_rate)]
+
+	acc_m = list(set(acc_m))
+	acc_m = sorted(acc_m,key=lambda x: x[0])
+	acc_m = sorted(acc_m,key=lambda x: x[1])
+
+	return(acc_m)
+
+####################################################################################
+####################################################################################
 knn = KNeighborsClassifier(n_neighbors = 11)
-knn.fit(cd.summaries,cd.summaries_r)
+knn.fit(summaries,summaries_r)
 
-pp = knn.predict_proba(cd.summaries)
-#These are in the order, "not","iss","som"
+pp = knn.predict_proba(summaries)
 
-#lets start with "iss"
 
-# acc_m = []
-# for j in range(-1,102):
-# 	iss_li = []
-# 	for i in range(pp.shape[0]):
-# 		if pp[i,1] >= j/100:
-# 			iss_li += ["iss"]
-# 		else:
-# 			iss_li += ["not iss"]
-
-# 	truep_rate = 0
-# 	falsep_rate = 0
-# 	for i in range(pp.shape[0]):
-# 		if iss_li[i] == cd.summaries_r.iloc[i]:
-# 			truep_rate += 1
-
-# 		not_iss = iss_li[i] == "not iss"
-# 		not_iss2 = (cd.summaries_r.iloc[i] == "not") or (cd.summaries_r.iloc[i] == "som")
-# 		if not_iss and not_iss2:
-# 			falsep_rate += 1
-
-# 	count = cd.summaries_r.value_counts()
-
-# 	truep_rate /= count[2]
-# 	falsep_rate /= (count[0]+count[1])
-
-#	acc_m += [(falsep_rate,truep_rate)]
-
-# iss_roc_data = acc_m
-
-#Now lets do "not"
-#count in this order "not", "som", "iss"
-
-# acc_m = []
-# for j in range(-1,102):
-# 	iss_li = []
-# 	for i in range(pp.shape[0]):
-# 		if pp[i,0] >= j/100:
-# 			iss_li += ["not"]
-# 		else:
-# 			iss_li += ["not not"]
-
-# 	truep_rate = 0
-# 	falsep_rate = 0
-# 	for i in range(pp.shape[0]):
-# 		if iss_li[i] == cd.summaries_r.iloc[i]:
-# 			truep_rate += 1
-
-# 		not_iss = iss_li[i] == "not not"
-# 		not_iss2 = (cd.summaries_r.iloc[i] == "iss") or (cd.summaries_r.iloc[i] == "som")
-# 		if not_iss and not_iss2:
-# 			falsep_rate += 1
-
-# 	count = cd.summaries_r.value_counts()
-
-# 	truep_rate /= count[0]
-# 	falsep_rate /= (count[1]+count[2])
-
-#	acc_m += [(falsep_rate,truep_rate)]
-
-# not_roc_data = acc_m
-
-#Now lets do "som"
-
-acc_m = []
-for j in range(-1,102):
-	iss_li = []
-	for i in range(pp.shape[0]):
-		if pp[i,0] <= j/100:
-			iss_li += ["som"]
-		else:
-			iss_li += ["not som"]
-
-	truep_rate = 0
-	falsep_rate = 0
-	for i in range(pp.shape[0]):
-		if iss_li[i] == cd.summaries_r.iloc[i]:
-			truep_rate += 1
-
-		not_iss = iss_li[i] == "som"
-		not_iss2 = cd.summaries_r.iloc[i] != "som"
-		if not_iss and not_iss2:
-			falsep_rate += 1
-
-	count = cd.summaries_r.value_counts()
-
-	truep_rate /= count[1]
-	falsep_rate /= (count[0]+count[2])
-
-	acc_m += [(falsep_rate,truep_rate)]
-
-som_roc_data = acc_m
+iss_roc = cat_ROC("iss", pp, summaries_r)
+som_roc = cat_ROC("som", pp, summaries_r)
+not_roc = cat_ROC("not", pp, summaries_r)
 
 ###################################################################################
-#now we have three roc curve data. to compute the AUC and weigh according
-#to class probabilities we compute the discrete integral of each.
+#now we have three roc curve data points. to compute the discrete integral
+#of eachand weigh according to class probabilities and sum up.
 
-#som_roc_data
-#not_roc_data
-#iss_roc_data
+from scipy.integrate import cumtrapz
 
-# print(som_roc_data)
-som_roc_data = list(set(som_roc_data))
-som_roc_data = sorted(som_roc_data,key=lambda x: x[0])
+def cumsum(data):
+	x = [i[0] for i in data]
+	y = [i[1] for i in data]
 
-print(som_roc_data)
+	auc_v = list(cumtrapz(y,x))
+	return(auc_v)
+
+aucs = [max(cumsum(not_roc)),max(cumsum(som_roc)),max(cumsum(iss_roc))]
+
+aucs_weighed = [aucs[i]*summaries_r.value_counts()[i]/summaries_r.shape[0] for i in range(3)]
+print(sum(aucs_weighed))
+
+#weighed AUC for each category is: .625
+
+###################################################################################
+#Now lets do the same with titles.
+
+# knn = KNeighborsClassifier(n_neighbors = 22)
+# knn.fit(titles,titles_r)
+
+# pp = knn.predict_proba(titles)
+
+
+# iss_roc = cat_ROC("iss", pp, titles_r)
+# som_roc = cat_ROC("som", pp, titles_r)
+# not_roc = cat_ROC("not", pp, titles_r)
+
+# from scipy.integrate import cumtrapz
+
+# def cumsum(data):
+# 	x = [i[0] for i in data]
+# 	y = [i[1] for i in data]
+
+# 	auc_v = list(cumtrapz(y,x))
+# 	return(auc_v)
+
+# aucs = [max(cumsum(not_roc)),max(cumsum(som_roc)),max(cumsum(iss_roc))]
+
+# aucs_weighed = [aucs[i]*titles_r.value_counts()[i]/titles_r.shape[0] for i in range(3)]
+# print(sum(aucs_weighed))
+
+#weighed AUC is .591

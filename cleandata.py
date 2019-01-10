@@ -128,3 +128,10 @@ titles_r.index = range(titles_r.shape[0])
 def info():
 	print("Factors for titles: 'titles' \nResponses for the titles:'titles_r")
 	print("Factors for summaries: 'summaries' \nResponses for the summaries:'summaries_r'")
+
+#Lets pickle this for my other scripts.
+
+summaries.to_pickle("summaries.pkl")
+summaries_r.to_pickle("summaries_r.pkl")
+titles_r.to_pickle("titles_r.pkl")
+titles.to_pickle("titles.pkl")
