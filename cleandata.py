@@ -116,6 +116,8 @@ summaries_r = summaries_r.drop(unknns_s)
 titles = titles.drop(unknns_t)
 titles_r = titles_r.drop(unknns_t)
 
+
+
 #reindex after the "drop" above.
 
 summaries.index = range(summaries.shape[0])
