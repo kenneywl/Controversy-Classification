@@ -1,52 +1,88 @@
-import cleandata as cd
 import pandas as pd
 
-#for niave bayes:
+#my homemade functions for auc
+import rocfunctions as rc
+
+#for niave bayes
 from sklearn.naive_bayes import GaussianNB
 from sklearn import metrics
 
-def cross_NB(factors,response):
+#for plotting
+import matplotlib.pyplot as plt
 
-	factors = factors.sample(frac=1)
-	response = response.reindex_like(factors)
 
-	factors.index = range(len(factors))
-	response.index = range(len(response))
+summaries = pd.read_pickle("summaries.pkl")
+summaries_r = pd.read_pickle("summaries_r.pkl")
+titles = pd.read_pickle("titles.pkl")
+titles_r = pd.read_pickle("titles_r.pkl")
 
-	hold = int(factors.shape[0]/10)
+# def cross_NB(factors,response):
+# 	hold = int(factors.shape[0]/10)
 
-	nb = GaussianNB()
-	acc = []
-	for i in range(10):
-		ind = [j for j in range(hold*i,hold*(i+1))]
+# 	nb = GaussianNB()
+# 	acc = []
+# 	for i in range(10):
+# 		ind = [j for j in range(hold*i,hold*(i+1))]
 
-		set_p = factors.drop(ind)
-		set_r = response.drop(ind)
+# 		set_p = factors.drop(ind)
+# 		set_r = response.drop(ind)
 
-		nb.fit(set_p,set_r)
-		ypred = nb.predict(factors.iloc[ind,:])
+# 		nb.fit(set_p,set_r)
+# 		ypred = nb.predict(factors.iloc[ind,:])
 
-		acc += [metrics.accuracy_score(response.iloc[ind],ypred)]
+# 		acc += [metrics.accuracy_score(response.iloc[ind],ypred)]
 
-	print("10 Fold, Shuffled, Average Accuracy:",sum(acc)/10)
+# 	print("10 Fold, Average Accuracy:",sum(acc)/10)
 
-	return()
+# 	return()
 
 #for the titles.
 # print("For the titles:")
-# cross_NB(cd.titles,cd.titles_r)
+# cross_NB(titles,titles_r)
 
-#Average acc is .567
-#Note this value changes slightly because 
-#I randomly shuffle the rows.
+#Average acc is .569
 
 #for the summaries:
 # print("For the summaries:")
-# cross_NB(cd.summaries,cd.summaries_r)
+# cross_NB(summaries,summaries_r)
 
-#.656 accuracy.
-#Note this value changes slightly because 
-#I randomly shuffle the rows.
+#.648 accuracy.
 
-#To do multiclass roc curve, I would have to pick an output to
-#base it off of, do that?
+##############################################################
+#ROC analysis of NB
+
+nb = GaussianNB()
+nb.fit(titles,titles_r)
+
+pp = nb.predict_proba(titles)
+
+iss_roc = rc.cat_ROC("iss", pp, titles_r)
+som_roc = rc.cat_ROC("som", pp, titles_r)
+not_roc = rc.cat_ROC("not", pp, titles_r)
+
+wa = rc.weighedAUC(iss_roc,som_roc,not_roc,titles_r)
+print("The weighed AUC for the titles:",wa)
+
+#I am getting .487
+#Now for the summaries: 
+
+nb.fit(summaries,summaries_r)
+
+pp = nb.predict_proba(summaries)
+
+iss_roc = rc.cat_ROC("iss", pp, summaries_r)
+som_roc = rc.cat_ROC("som", pp, summaries_r)
+not_roc = rc.cat_ROC("not", pp, summaries_r)
+
+wa = rc.weighedAUC(iss_roc,som_roc,not_roc,summaries_r)
+print("The weighed AUC for the summaries:",wa)
+
+#I am getting .620
+
+######################
+#for plotting.
+
+x, y = zip(*not_roc)
+
+plt.scatter(x,y)
+plt.show()
