@@ -1,16 +1,25 @@
 import pandas as pd
 from scipy.integrate import cumtrapz
+import numpy as np
 
 #The below function takes class probabilites and actual probs
 #and the category you are interested in and makes the roc data points.
 
-def cat_ROC(cat, pred_prob, actual_cat):
+def cat_ROC(cat, pred_prob, order, actual_cat):
+
+	order = list(order)
+	pred_ind = order.index(cat)
+
+	cat_list = list(actual_cat.value_counts().index)
+	cat_ind = cat_list.index(cat)
+
+	count = actual_cat.value_counts()
 
 	acc_m = []
 	for j in range(-1,102):
 		iss_li = []
 		for i in range(pred_prob.shape[0]):
-			if pred_prob[i,1] >= j/100:
+			if pred_prob[i,pred_ind] >= j/100:
 				iss_li += [cat]
 			else:
 				iss_li += ["not " + cat]
@@ -18,18 +27,15 @@ def cat_ROC(cat, pred_prob, actual_cat):
 		truep_rate = 0
 		falsep_rate = 0
 		for i in range(pred_prob.shape[0]):
-			if iss_li[i] == actual_cat.iloc[i]:
-				truep_rate += 1
+			is_iss = iss_li[i] == cat
 
-			not_iss = iss_li[i] == cat
+			is_iss2 = actual_cat[i] == cat
+			if is_iss and is_iss2:
+ 				truep_rate += 1
+
 			not_iss2 = actual_cat[i] != cat
-			if not_iss and not_iss2:
+			if is_iss and not_iss2:
 				falsep_rate += 1
-
-		cat_list = list(actual_cat.value_counts().index)
-		cat_ind = cat_list.index(cat)
-
-		count = actual_cat.value_counts()
 
 		truep_rate /= count[cat_ind]
 		falsep_rate /= sum(count) - count[cat_ind]

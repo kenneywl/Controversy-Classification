@@ -22,7 +22,7 @@ for i in range(1000):
 		ans = "unk"
 	else:
 		ind = thr.index(d)
-		ans = ["iss","som","not"][ind]
+		ans = ["Controversial","Somewhat Controversial","Not Controversial"][ind]
 
 	tcont += [ans]
 
@@ -42,15 +42,14 @@ su = pd.read_excel("Summaries.xlsx")
 
 scont = su.iloc[0:1000,7]
 
-#make the repsonses the same length for ease.
-#we can always put it back later.
+#Lets make them with caps:
 for i in range(len(scont)):
 	if scont[i] == "controversial":
-		scont[i] = "iss"
+		scont[i] = "Controversial"
 	if scont[i] == "somewhat controversial":
-		scont[i] = "som"
+		scont[i] = "Somewhat Controversial"
 	if scont[i] == "not controversial":
-		scont[i] = "not"
+		scont[i] = "Not Controversial"
 	if scont[i] == "unknown":
 		scont[i] = "unk"
 

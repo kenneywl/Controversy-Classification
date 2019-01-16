@@ -1,12 +1,12 @@
 import pandas as pd
-import rocfunctions as rc
+from sklearn.model_selection import train_test_split
 
 #For KNN
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
 
 #####################################################################
-#we can unpickle our data from cleandata.py
+#we unpickle our data from cleandata.py
 
 summaries = pd.read_pickle("summaries.pkl")
 summaries_r = pd.read_pickle("summaries_r.pkl")
@@ -15,9 +15,11 @@ titles_r = pd.read_pickle("titles_r.pkl")
 
 ######################################################################
 #I wrote a function to do a 10 fold cross validation.
-#this function requires the "for KNN above."
+#It leaves out 10% at a time and tests against that.
+#This function finds the best value for k
 
-def knn_cross(factors,response,max_k=31):
+
+def knn_which_k(factors,response,max_k=31):
 	hold = int(factors.shape[0]/10)
 
 	acc_m = []
@@ -45,55 +47,16 @@ def knn_cross(factors,response,max_k=31):
 #The accuracies for each value of k from 1 to 30
 #for titles:
 
-# print("For the titles:")
-# knn_cross(titles,titles_r)
+print("For the titles:")
+knn_which_k(titles,titles_r)
 
-#The k value is 22 with a acc of .496
+#The k value is 22 with an acc of .496
 #somewhat better than random (which would be .33)
 #as there are three possible response categaores.
 
 #For the summaries:
-# print("For the summaries:")
-# knn_cross(summaries,summaries_r)
+print("For the summaries:")
+knn_which_k(summaries,summaries_r)
 
 #The k value is 11, with a acc of .652
 #not terrible.
-
-##################################################################
-##################################################################
-#Now lets explore the ROC curve. We use the max k values above.
-
-knn = KNeighborsClassifier(n_neighbors = 11)
-knn.fit(summaries,summaries_r)
-
-pp = knn.predict_proba(summaries)
-
-iss_roc = rc.cat_ROC("iss", pp, summaries_r)
-som_roc = rc.cat_ROC("som", pp, summaries_r)
-not_roc = rc.cat_ROC("not", pp, summaries_r)
-
-#The above are ROC data points.
-#now we have three roc curve data points. to compute the discrete integral
-#of eachand weigh according to class probabilities and sum up.
-
-wa = rc.weighedAUC(iss_roc,som_roc,not_roc,summaries_r)
-print("The weighed AUC for the summaries:",wa)
-
-#weighed AUC for each category is: .625
-
-###################################################################################
-#Now lets do the same with titles.
-
-# knn = KNeighborsClassifier(n_neighbors = 22)
-# knn.fit(titles,titles_r)
-
-# pp = knn.predict_proba(titles)
-
-# iss_roc = rc.cat_ROC("iss", pp, titles_r)
-# som_roc = rc.cat_ROC("som", pp, titles_r)
-# not_roc = rc.cat_ROC("not", pp, titles_r)
-
-# wa = rc.weighedAUC(iss_roc,som_roc,not_roc,titles_r)
-# print("The weighed AUC for the titles:",wa)
-
-#weighed AUC is .486
