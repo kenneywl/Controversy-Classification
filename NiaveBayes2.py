@@ -49,7 +49,7 @@ pp_titles = nb_cross(titles,titles_r)
 
 weighed_auc = roc_auc_score(bin_resp_titles,pp_titles,average="weighted")
 
-print("Naive Bayes Title AUC weighed by class probabilites:",weighed_auc)
+print("Naive Bayes Titles AUC weighed by class probabilites:",weighed_auc)
 
 tpr = dict()
 fpr = dict()
@@ -82,7 +82,7 @@ plt.plot(fpr[0],vert_average,label="Vertical Weighed Average")
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend(loc="lower right")
-plt.title("Naive Bayes Title Binary Relevance ROC")
+plt.title("Naive Bayes Titles Binary Relevance ROC")
 f.show()
 
 
