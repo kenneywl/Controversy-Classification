@@ -31,5 +31,5 @@
 
 #Folders.
 
-A. Old_Scripts : A graveyard for scripts no longer needed.
-B. pycache : Cache for some of the scripts above. 
+16. Old_Scripts : A graveyard for scripts no longer needed.
+17. pycache : Cache for some of the scripts above. 
