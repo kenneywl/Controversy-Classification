@@ -4,7 +4,7 @@
 
 #The input files:
 
-1.Factors.xlsx : LWIC data from the articles.
+1.Factors.xlsx : LWIC data from the articles. 
 2.Summaries.xlsx : Results from Mechinical Turk.
 3.Titles.xlsx : Results from Mechinical Turk.
 
