@@ -2,27 +2,23 @@ import xlrd
 from math import log
 import scipy.stats
 
-ti = xlrd.open_workbook("Titles.xlsx").sheet_by_index(0)
-su = xlrd.open_workbook("Summaries.xlsx").sheet_by_index(0)
-fa = xlrd.open_workbook("Factors.xlsx").sheet_by_index(0)
+import pandas as pd
 
-tsc = ti.col_values(colx=3,start_rowx=1,end_rowx=1001)
-tnc = ti.col_values(colx=4,start_rowx=1,end_rowx=1001)
-tc = ti.col_values(colx=2,start_rowx=1,end_rowx=1001)
+fa = pd.read_excel("Factors.xlsx")
+ti = pd.read_excel("Titles.xlsx")
+su = pd.read_excel("Summaries.xlsx")
 
-sc = su.col_values(colx=3,start_rowx=1,end_rowx=1001)
-ssc = su.col_values(colx=4,start_rowx=1,end_rowx=1001)
-snc = su.col_values(colx=5,start_rowx=1,end_rowx=1001)
-scont = su.col_slice(colx=7,start_rowx=1,end_rowx=1001)
+titles_a = ti.iloc[:,[2,3,4]]
+summaries_a = su.iloc[:1000,[3,4,5,7]]
 
-for i in range(len(scont)):
-	scont[i] = scont[i].value
+summaries_a.iloc[:,2] = [float(summaries_a.iloc[i,2]) for i in range(1000)]
 
-# print([sum(tc)/20000,sum(tsc)/20000,sum(tnc)/20000])
-# print([sum(sc)/20000,sum(ssc)/20000,sum(snc)/20000])
+margins_t = titles_a.sum(numeric_only=True).div(titles_a.shape[0]*20)
+margins_s = summaries_a.sum(numeric_only=True).div(summaries_a.shape[0]*20)
 
 #######################################################
 #G-test on titles:
+#This has not been updated to pandas yet.
 # def igzero(canidate):
 # 	if canidate == 0:
 # 		return 1
@@ -101,3 +97,5 @@ for i in range(len(scont)):
 # print((meanags-sumofpss)/(1-sumofpss))
 #Kappa ts: .066, looks like combining them doesn't
 #help, it makes it worse. 
+
+####################################################################

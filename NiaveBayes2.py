@@ -131,3 +131,7 @@ plt.ylabel('True Positive Rate')
 plt.legend(loc="lower right")
 plt.title("Naive Bayes Summaries Binary Relevance ROC")
 f1.show()
+
+
+#Titles: .6826
+#Summaries: .8155

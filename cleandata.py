@@ -1,4 +1,5 @@
 import pandas as pd
+from math import sqrt,log
 
 #For the factors:
 fa = pd.read_excel("Factors.xlsx")
@@ -36,7 +37,6 @@ fa = fa.iloc[:,ind]
 
 #Note we are missing standard devation and entropy.
 #Lets include them: (this might be wrong.)
-from math import sqrt,log
 
 #for stand dev
 ssd = []
@@ -98,7 +98,6 @@ fach_su = fa.iloc[:,ind2]
 
 #Note we are missing standard devation and entropy.
 #Lets include them: (this might be wrong.)
-from math import sqrt,log
 
 sc = su.iloc[0:1000,3]
 ssc = su.iloc[0:1000,4]
