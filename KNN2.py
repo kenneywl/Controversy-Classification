@@ -26,6 +26,7 @@ def knn_cross(factors,response,k):
 		kn.fit(set_p,set_r)
 		pp = np.append(pp,kn.predict_proba(factors.iloc[ind,:]),axis=0)
 
+
 	ind = [j for j in range(hold*9,len(response))]
 
 	set_p = factors.drop(ind)
@@ -33,18 +34,20 @@ def knn_cross(factors,response,k):
 
 	kn.fit(set_p,set_r)
 	pp = np.append(pp,kn.predict_proba(factors.iloc[ind,:]),axis=0)
-
 	return pp
 
+##########################################################################################
+##########################################################################################
 #Now lets get probs with our function above
-#I used 22 as it was the max value from KNN.py
-pp_titles = knn_cross(titles,titles_r,22)
+#I used 21 as it was the max value from KNN.py
+pp_titles = knn_cross(titles,titles_r,10)
 
 bin_resp_titles = label_binarize(titles_r, \
 	classes=["Controversial","Not Controversial","Somewhat Controversial"])
+
 weighed_auc = roc_auc_score(bin_resp_titles,pp_titles,average="weighted")
 
-print("22 Nearest Neighbors Titles AUC weighed by class probabilites:",weighed_auc)
+print("10 Nearest Neighbors Titles AUC weighed by class probabilites:",weighed_auc)
 
 tpr = dict()
 fpr = dict()
@@ -77,21 +80,24 @@ plt.plot(fpr[0],vert_average,label="Vertical Weighed Average")
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend(loc="lower right")
-plt.title("22 Nearest Neighbors Titles Binary Relevance ROC")
+plt.title("10 Nearest Neighbors Titles Binary Relevance ROC")
 f1.show()
+
+#Titles
+#k:10 AUC:.59877
 
 ###################################################################################
 #Now lets get probs with our function above
 #I used 11 as it was the max value for summaries from KNN.py
 
-pp_summaries = knn_cross(summaries,summaries_r,11)
+pp_summaries = knn_cross(summaries,summaries_r,14)
 
 bin_resp_summaries = label_binarize(summaries_r, \
 	classes=["Controversial","Not Controversial","Somewhat Controversial"])
 
 weighed_auc = roc_auc_score(bin_resp_summaries,pp_summaries,average="weighted")
 
-print("11 Nearest Neighbors Summaries AUC weighed by class probabilites:",weighed_auc)
+print("14 Nearest Neighbors Summaries AUC weighed by class probabilites:",weighed_auc)
 
 tpr = dict()
 fpr = dict()
@@ -124,5 +130,12 @@ plt.plot(fpr[0],vert_average,label="Vertical Weighed Average")
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend(loc="lower right")
-plt.title("11 Nearest Neighbors Summaries Binary Relevance ROC")
+plt.title("14 Nearest Neighbors Summaries Binary Relevance ROC")
 f1.show()
+
+
+#Titles
+#k:10 AUC:.59877
+
+#Summaries
+#k;14 AUC:.68577

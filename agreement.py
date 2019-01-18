@@ -84,3 +84,20 @@ for i in range(len(scont)):
 #There is some agreement.
 ########################################################
 ########################################################
+#lets join them together element wise and see:
+
+# jc = [tc[i]+sc[i] for i in range(1000)]
+# jsc = [tsc[i]+ssc[i] for i in range(1000)]
+# jnc = [tnc[i]+snc[i] for i in range(1000)]
+
+# #Fleis kappa for the joined info:
+# ags = []
+# for i in range(len(jc)):
+# 	ags += [(jc[i]**2+jsc[i]**2+jnc[i]**2-40)/(40*39)]
+
+# meanags = (sum(ags)/1000)
+# sumofpss = (sum(jc)**2+sum(jsc)**2+sum(jnc)**2)/((40*1000)**2)
+
+# print((meanags-sumofpss)/(1-sumofpss))
+#Kappa ts: .066, looks like combining them doesn't
+#help, it makes it worse. 

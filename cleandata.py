@@ -32,7 +32,32 @@ titles_r = pd.DataFrame(tcont)[0]
 ind = [85,50,83,94,49,33,6,61,35,7,2,8,71,63,32,10,70,37,29,4,72, \
        58,45,64,25,42,31,51,67,59,68,20]
 
-titles = fa.iloc[:,ind]
+fa = fa.iloc[:,ind]
+
+#Note we are missing standard devation and entropy.
+#Lets include them: (this might be wrong.)
+from math import sqrt,log
+
+#for stand dev
+ssd = []
+mean = 20/3
+for i in range(len(tc)):
+	ssd += [sqrt(tc[i]*(tc[i]-mean)**2+tsc[i]*(tsc[i]-mean)**2+tnc[i]*(tnc[i]-mean)**2)]
+
+ssd = [i/sqrt(20) for i in ssd]
+
+#for entropy
+sen = []
+for i in range(len(tc)):
+	if tc[i] == 0: tc[i] = 1
+	if tsc[i] == 0: tsc[i] = 1
+	if tnc[i] == 0: tnc[i] = 1
+
+	sen += [20*log(20)-(tc[i]*log(tc[i])+tsc[i]*log(tsc[i])+tnc[i]*log(tnc[i]))]
+
+sen = [i/20 for i in sen]
+
+titles = fa.assign(StandardDevaition = ssd,Entropy=sen)
 
 #"titles" should be the factors used for each model. titles_r should
 #be the responses.
@@ -83,7 +108,9 @@ snc = su.iloc[0:1000,5]
 ssd = []
 mean = 20/3
 for i in range(len(sc)):
-	ssd += [sqrt(((sc[i]-mean)**2+(ssc[i]-mean)**2+(snc[i]-mean)**2)/2)]
+	ssd += [sqrt(sc[i]*(sc[i]-mean)**2+ssc[i]*(ssc[i]-mean)**2+snc[i]*(snc[i]-mean)**2)]
+
+ssd = [i/sqrt(20) for i in ssd]
 
 #for entropy
 sen = []
@@ -92,7 +119,9 @@ for i in range(len(sc)):
 	if ssc[i] == 0: ssc[i] = 1
 	if snc[i] == 0: snc[i] = 1
 
-	sen += [log(20)-(sc[i]*log(sc[i])+ssc[i]*log(ssc[i])+snc[i]*log(snc[i]))/20]
+	sen += [20*log(20)-(sc[i]*log(sc[i])+ssc[i]*log(ssc[i])+snc[i]*log(snc[i]))]
+
+sen = [i/20 for i in sen]
 
 summaries = fach_su.assign(StandardDevaition = ssd,Entropy=sen)
 summaries_r = scont
@@ -123,10 +152,6 @@ summaries.index = range(summaries.shape[0])
 summaries_r.index = range(summaries_r.shape[0])
 titles.index = range(titles.shape[0])
 titles_r.index = range(titles_r.shape[0])
-
-def info():
-	print("Factors for titles: 'titles' \nResponses for the titles:'titles_r")
-	print("Factors for summaries: 'summaries' \nResponses for the summaries:'summaries_r'")
 
 #Lets pickle this for my other scripts.
 
