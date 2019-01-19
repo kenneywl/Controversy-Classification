@@ -1,101 +1,58 @@
-import xlrd
-from math import log
-import scipy.stats
-
 import pandas as pd
+from math import log2
 
 fa = pd.read_excel("Factors.xlsx")
 ti = pd.read_excel("Titles.xlsx")
 su = pd.read_excel("Summaries.xlsx")
 
-titles_a = ti.iloc[:,[2,3,4]]
-summaries_a = su.iloc[:1000,[3,4,5,7]]
+titles_a = pd.DataFrame(ti.iloc[:,[2,3,4]])
+summaries_a = pd.DataFrame(su.iloc[:1000,[3,4,5]])
 
 summaries_a.iloc[:,2] = [float(summaries_a.iloc[i,2]) for i in range(1000)]
+
+summaries_a = summaries_a.rename( \
+	columns={"controversial":"Controversial","not controversial":"Not Controversial","somewhat controversial":"Somewhat Controversial"})
 
 margins_t = titles_a.sum(numeric_only=True).div(titles_a.shape[0]*20)
 margins_s = summaries_a.sum(numeric_only=True).div(summaries_a.shape[0]*20)
 
-#######################################################
-#G-test on titles:
-#This has not been updated to pandas yet.
-# def igzero(canidate):
-# 	if canidate == 0:
-# 		return 1
-# 	else:
-# 		return canidate
+con_t = [i/2 for i in titles_a["Somewhat Controversial"]]
+con_s = [i/2 for i in summaries_a["Somewhat Controversial"]]
 
-# etc = 20*sum(tc)/(20*1000)
-# etsc = 20*sum(tsc)/(20*1000)
-# etnc = 20*sum(tnc)/(20*1000)
+titles_a["Controversial"] = [i+j for i,j in zip(con_t,titles_a["Controversial"])]
+titles_a["Not Controversial"] = [i+j for i,j in zip(con_t,titles_a["Not Controversial"])]
 
-# gts = 0
-# for i in range(len(tc)):
-# 	gts += tc[i]*log(igzero(tc[i])/etc)+ \
-# 	tsc[i]*log(igzero(tsc[i])/etsc)+tnc[i]*log(igzero(tnc[i])/etnc)
+summaries_a["Not Controversial"] = [i+j for i,j in zip(con_s,summaries_a["Not Controversial"])]
+summaries_a["Controversial"] = [i+j for i,j in zip(con_s,summaries_a["Controversial"])]
 
-# gts *= 2
+titles_a = titles_a.drop(labels="Somewhat Controversial",axis=1)
+summaries_s = summaries_a.drop(labels="Somewhat Controversial",axis=1)
 
-# print(gts)
-# print(1-scipy.stats.chi2.cdf(gts,999*2))
-#g test st is 3703, pvalue about zero.
-############################################################
-# chi-square test on titles
+#####################################################################################################
+#####################################################################################################
 
-# etc = 20*sum(tc)/(20*1000)
-# etsc = 20*sum(tsc)/(20*1000)
-# etnc = 20*sum(tnc)/(20*1000)
+#We choose max to be the response, and get an entropy base two for each (to possibly weigh each instance)
+#how would you do this?
+#Ties go to not controversial.
+titles_res = []
+for i in range(1000):
+	if titles_a["Controversial"][i] > titles_a["Not Controversial"][i]:
+		titles_res += ["Controversial"]
+	else:
+		titles_res += ["Not Controversial"]
 
-# chitst = 0
-# for i in range(len(tc)):
-# 	chitst += (tc[i]-etc)**2/etc+(tsc[i]-etsc)**2/etsc+(tnc[i]-etnc)**2/etnc
+titles_ent = []
+for i in range(1000):
+ 	titles_ent += [log2(20)-(titles_a.iloc[i,0]*log2(titles_a.iloc[i,0])+titles_a.iloc[i,1]*log2(titles_a.iloc[i,1]))/20]
 
-# print(chitst)
-# print(1-scipy.stats.chi2.cdf(chitst,999*2))
-#chisq test st is 3528, pvalue about zero.
-#######################################################
-#Fleiss's Kappa for titles:
-# agt = []
-# for i in range(len(tc)):
-# 	agt += [(tc[i]**2+tsc[i]**2+tnc[i]**2-20)/380]
+titles_ent = [1-i for i in titles_ent]
 
-# meanagt = (sum(agt)/1000)
-# sumofps = (sum(tc)**2+sum(tsc)**2+sum(tnc)**2)/((20*1000)**2)
+####################################################################################################
+#Yet another approch is have the response a value between 0 and 1.
+#the response is then p(Controversial)
 
-# print((meanagt-sumofps)/(1-sumofps))
-#Kappa ts: .036 super low.
-#We can see that these two are almost the same value:
-# print(meanagt,sumofps)
-########################################################
-#Fleis kappa for summaries:
-# ags = []
-# for i in range(len(tc)):
-# 	ags += [(sc[i]**2+ssc[i]**2+snc[i]**2-20)/380]
+titles_pzero = []
+for i in range(1000):
+	titles_pzero += [titles_a["Controversial"][i]/20]
 
-# meanags = (sum(ags)/1000)
-# sumofpss = (sum(sc)**2+sum(ssc)**2+sum(snc)**2)/((20*1000)**2)
-
-# print((meanags-sumofpss)/(1-sumofpss))
-#Kappa ts: .139. better, but still low.
-#There is some agreement.
-########################################################
-########################################################
-#lets join them together element wise and see:
-
-# jc = [tc[i]+sc[i] for i in range(1000)]
-# jsc = [tsc[i]+ssc[i] for i in range(1000)]
-# jnc = [tnc[i]+snc[i] for i in range(1000)]
-
-# #Fleis kappa for the joined info:
-# ags = []
-# for i in range(len(jc)):
-# 	ags += [(jc[i]**2+jsc[i]**2+jnc[i]**2-40)/(40*39)]
-
-# meanags = (sum(ags)/1000)
-# sumofpss = (sum(jc)**2+sum(jsc)**2+sum(jnc)**2)/((40*1000)**2)
-
-# print((meanags-sumofpss)/(1-sumofpss))
-#Kappa ts: .066, looks like combining them doesn't
-#help, it makes it worse. 
-
-####################################################################
+print(titles_zero)
