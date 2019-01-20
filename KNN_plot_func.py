@@ -24,7 +24,7 @@ def prob_cross(factors,response,k):
 	return pp
 
 
-def plot_auc(factors,response,k):
+def knn_plot_auc(factors,response,k):
 	pp = prob_cross(factors,response,k)
 	bin_response = label_binarize(response, classes=list(pp))
 
@@ -62,7 +62,7 @@ def plot_auc(factors,response,k):
 
 #Plot acc and max AUC by k
 
-def acc_cross(factors,response,k):
+def knn_acc_cross(factors,response,k):
 	kn = KNeighborsClassifier(n_neighbors=k)
 	kf = KFold(n_splits=10)
 	kf.get_n_splits(factors)
@@ -84,7 +84,7 @@ def which_k_plot(factors,response):
 		bin_response = label_binarize(response, classes=list(pp_response))
 
 		weighed_auc += [roc_auc_score(bin_response,pp_response,average="weighted")]
-		acc += [acc_cross(factors,response,i)]
+		acc += [knn_acc_cross(factors,response,i)]
 
 	plot_title = response.name + " Weighed AUC and Accuracy by k"
 

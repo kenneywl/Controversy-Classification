@@ -14,7 +14,7 @@ titles_r = pd.read_pickle("titles_r.pkl")
 #####################################################################################
 #ten fold cross validation returns accuracy.
 
-def cross(factors,response,model):
+def svm_cross(factors,response,model):
 	factors_scaled = RobustScaler().fit_transform(factors)
 	kf = KFold(n_splits=10)
 	kf.get_n_splits(factors_scaled)
@@ -31,35 +31,35 @@ def cross(factors,response,model):
 #On titles:
 print("On Titles:")
 model = SVC(kernel="linear",gamma='scale')
-print("Linear",cross(titles,titles_r,model))
+print("Linear",svm_cross(titles,titles_r,model))
 
 #.582548
 model = SVC(kernel="rbf",gamma='scale')
-print("rbf",cross(titles,titles_r,model))
+print("rbf",svm_cross(titles,titles_r,model))
 #.565667
 
 model = SVC(kernel="sigmoid",gamma='scale')
-print("Sigmoid",cross(titles,titles_r,model))
+print("Sigmoid",svm_cross(titles,titles_r,model))
 #.493982
 
 model = SVC(kernel="poly",gamma='scale')
-print("Poly",cross(titles,titles_r,model))
+print("Poly",svm_cross(titles,titles_r,model))
 #.547877
 
 #On summaries:
 print("On Summaries:")
 model = SVC(kernel="linear",gamma='scale')
-print("Linear",cross(summaries,summaries_r,model))
+print("Linear",svm_cross(summaries,summaries_r,model))
 #.7
 
 model = SVC(kernel="rbf",gamma='scale')
-print("rbf",cross(summaries,summaries_r,model))
+print("rbf",svm_cross(summaries,summaries_r,model))
 #.669
 
 model = SVC(kernel="sigmoid",gamma='scale')
-print("Sigmoid",cross(summaries,summaries_r,model))
+print("Sigmoid",svm_cross(summaries,summaries_r,model))
 #.57978
 
 model = SVC(kernel="poly",gamma='scale')
-print("Poly",cross(summaries,summaries_r,model))
+print("Poly",svm_cross(summaries,summaries_r,model))
 #.6638
