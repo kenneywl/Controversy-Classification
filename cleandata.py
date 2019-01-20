@@ -152,6 +152,11 @@ summaries_r.index = range(summaries_r.shape[0])
 titles.index = range(titles.shape[0])
 titles_r.index = range(titles_r.shape[0])
 
+#Lets name the reponses (this will be used later.)
+
+summaries_r.name = "Summaries"
+titles_r.name = "Titles"
+
 #Lets pickle this for my other scripts.
 
 summaries.to_pickle("summaries.pkl")

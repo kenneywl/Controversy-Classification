@@ -1,55 +1,41 @@
-from sklearn.preprocessing import label_binarize
-from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import roc_auc_score,roc_curve,auc
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.model_selection import KFold
+from sklearn.preprocessing import label_binarize
 
-
+#Lets import our data:
 summaries = pd.read_pickle("summaries.pkl")
 summaries_r = pd.read_pickle("summaries_r.pkl")
 titles = pd.read_pickle("titles.pkl")
 titles_r = pd.read_pickle("titles_r.pkl")
 
-########################################################################################
-#lets make a function to do 10 fold cross for niave bayes.
-#This is very much like KNN but a little different.
+##########################################################################
 
-def nb_cross(factors,response):
-	hold = int(factors.shape[0]/10)
-	nb = GaussianNB()
+def nb_cross(factors,response,model):
+	kf = KFold(n_splits=10)
+	kf.get_n_splits(factors)
+
 	pp = np.ndarray(shape=(0,3))
-	for i in range(9):
-		ind = [j for j in range(hold*i,hold*(i+1))]
+	for i,j in kf.split(factors):
+		model.fit(factors.iloc[i,:],response.iloc[i])
+		pred = model.predict_proba(factors.iloc[j,:])
+		pp = np.append(pp,pred,axis=0)
 
-		set_p = factors.drop(ind)
-		set_r = response.drop(ind)
+	return(pp)
 
-		nb.fit(set_p,set_r)
-		pp = np.append(pp,nb.predict_proba(factors.iloc[ind,:]),axis=0)
 
-	ind = [j for j in range(hold*9,len(response))]
-
-	set_p = factors.drop(ind)
-	set_r = response.drop(ind)
-
-	nb.fit(set_p,set_r)
-	pp = np.append(pp,nb.predict_proba(factors.iloc[ind,:]),axis=0)
-
-	return pp
-
-#####################################################################################
-#Lets do this first for titles
-#Bin the responses
+####################################################################################
+#For titles:
+model = GaussianNB()
+pp_titles = nb_cross(titles,titles_r,model)
 
 bin_resp_titles = label_binarize(titles_r, \
 	classes=["Controversial","Not Controversial","Somewhat Controversial"])
 
-pp_titles = nb_cross(titles,titles_r)
-
 weighed_auc = roc_auc_score(bin_resp_titles,pp_titles,average="weighted")
-
-print("Naive Bayes Titles AUC weighed by class probabilites:",weighed_auc)
 
 tpr = dict()
 fpr = dict()
@@ -84,19 +70,18 @@ plt.ylabel('True Positive Rate')
 plt.legend(loc="lower right")
 plt.title("Naive Bayes Titles Binary Relevance ROC")
 f.show()
+print("Naive Bayes Titles AUC weighed by class probabilites:",weighed_auc)
+#.68067
 
+####################################################################################################
 
-###########################################################################################
-#Beautiful! and lets do the same for summaries:
+model = GaussianNB()
+pp_summaries = nb_cross(summaries,summaries_r,model)
 
 bin_resp_summaries = label_binarize(summaries_r, \
 	classes=["Controversial","Not Controversial","Somewhat Controversial"])
 
-pp_summaries = nb_cross(summaries,summaries_r)
-
 weighed_auc = roc_auc_score(bin_resp_summaries,pp_summaries,average="weighted")
-
-print("Naive Bayes Summaries AUC weighed by class probabilites:",weighed_auc)
 
 tpr = dict()
 fpr = dict()
@@ -131,7 +116,5 @@ plt.ylabel('True Positive Rate')
 plt.legend(loc="lower right")
 plt.title("Naive Bayes Summaries Binary Relevance ROC")
 f1.show()
-
-
-#Titles: .6826
-#Summaries: .8155
+print("Naive Bayes Summaries AUC weighed by class probabilites:",weighed_auc)
+#.8155
