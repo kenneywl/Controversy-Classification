@@ -6,12 +6,6 @@ from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import label_binarize
 
-#Lets import our data:
-summaries = pd.read_pickle("summaries.pkl")
-summaries_r = pd.read_pickle("summaries_r.pkl")
-titles = pd.read_pickle("titles.pkl")
-titles_r = pd.read_pickle("titles_r.pkl")
-
 ##########################################################################
 
 def NB_prob_cross(factors,response):
@@ -19,7 +13,7 @@ def NB_prob_cross(factors,response):
 	kf = KFold(n_splits=10)
 	kf.get_n_splits(factors)
 
-	pp = np.ndarray(shape=(0,3))
+	pp = np.ndarray(shape=(0,response.nunique()))
 	for i,j in kf.split(factors):
 		model.fit(factors.iloc[i,:],response.iloc[i])
 		pred = model.predict_proba(factors.iloc[j,:])
