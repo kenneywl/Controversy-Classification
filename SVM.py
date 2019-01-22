@@ -81,35 +81,35 @@ pd.set_option('display.max_columns', 500)
 
 ###########################################################################
 #sigmoid
-#On titles:
-print("On sigmoid Titles:")
-model = SVC(kernel="sigmoid")
+#On titles: .574 c=.8 gamma = .0007
+# print("On sigmoid Titles:")
+# model = SVC(kernel="sigmoid")
 
-Cs = [.8,.9,1]
-gamma = [.0005,.0006,.0007]
-para_grid = {"C" : Cs,"gamma":gamma}
-gridS = GridSearchCV(model, para_grid, cv=10,return_train_score=False,iid=False)
+# Cs = [.8,.9,1]
+# gamma = [.0005,.0006,.0007]
+# para_grid = {"C" : Cs,"gamma":gamma}
+# gridS = GridSearchCV(model, para_grid, cv=10,return_train_score=False,iid=False)
 
-titles_trans = RobustScaler().fit_transform(titles)
-gridS.fit(titles_trans,titles_r)
+# titles_trans = RobustScaler().fit_transform(titles)
+# gridS.fit(titles_trans,titles_r)
 
 
-print(gridS.best_params_)
-params = pd.DataFrame(gridS.cv_results_)[["param_C","param_gamma","mean_test_score","rank_test_score"]]
-print(params)
+# print(gridS.best_params_)
+# params = pd.DataFrame(gridS.cv_results_)[["param_C","param_gamma","mean_test_score","rank_test_score"]]
+# print(params)
 
-#on summaries 
-print("On sigmoid Summaries:")
-model = SVC(kernel="sigmoid")
+# #on summaries 0.693 for c= 11 and gamma = .001
+# print("On sigmoid Summaries:")
+# model = SVC(kernel="sigmoid")
 
-Cs = [10,11,12]
-gamma = [.0005,.001,.005]
-para_grid = {"C" : Cs,"gamma":gamma}
-gridS = GridSearchCV(model, para_grid, cv=10,return_train_score=False,iid=False)
+# Cs = [10,11,12]
+# gamma = [.0005,.001,.005]
+# para_grid = {"C" : Cs,"gamma":gamma}
+# gridS = GridSearchCV(model, para_grid, cv=10,return_train_score=False,iid=False)
 
-summaries_trans = RobustScaler().fit_transform(summaries)
-gridS.fit(summaries_trans,summaries_r)
+# summaries_trans = RobustScaler().fit_transform(summaries)
+# gridS.fit(summaries_trans,summaries_r)
 
-print(gridS.best_params_)
-params = pd.DataFrame(gridS.cv_results_)[["param_C","param_gamma","mean_test_score","rank_test_score"]]
-print(params)
+# print(gridS.best_params_)
+# params = pd.DataFrame(gridS.cv_results_)[["param_C","param_gamma","mean_test_score","rank_test_score"]]
+# print(params)

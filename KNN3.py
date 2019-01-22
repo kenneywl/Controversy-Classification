@@ -13,8 +13,7 @@ from KNN_plot_func import *
 #acc_cross gets the 10 fold cross validation, and prob_cross get the 10 fold cross probabilites
 #for each category. It outputs a tuple, (weighed AUC, Accuracy)
 
-def which_k(factors,response):
-	max_k = factors.shape[1]
+def which_k(factors,response,max_k=30):
 	weighed_auc = []
 	acc = []
 	for i in range(1,max_k+1):
