@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import label_binarize
 from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import auc, roc_auc_score, roc_curve
+from sklearn.metrics import roc_auc_score, roc_curve, accuracy_score
 import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 
@@ -26,22 +26,22 @@ def nb_auc_acc_cross(factors,response):
 	#for auc
 	pred_probability = np.ndarray(shape=(0,3))
 	for i,j in kf.split(factors):
-		kn.fit(factors.iloc[i,:],response.iloc[i])
+		nb.fit(factors.iloc[i,:],response.iloc[i])
 
-		pv = kn.predict(factors.iloc[j,:]) #predict the outcome
-		pp = kn.predict_proba(factors.iloc[j,:]) #predict the probabilities
+		pv = nb.predict(factors.iloc[j,:]) #predict the outcome
+		pp = nb.predict_proba(factors.iloc[j,:]) #predict the probabilities
 
-		pred_response = np.append(pred_response,pv,axis=0) #apppend to the master list
-		pred_response = pd.DataFrame(pred_response,columns=list(kn.classes_))
+		pred_response = np.append(pred_response,pv) #apppend to the master list
+		pred_response = pd.DataFrame(pred_response)
 
 		pred_probability = np.append(pred_probability,pp,axis=0) #append to the master list
-		pred_probability = pd.DataFrame(pred_probability,columns=list(kn.classes_))
+		pred_probability = pd.DataFrame(pred_probability,columns=list(nb.classes_))
 	return(pred_probability,pred_response)
 
 #####################################################################################
 
 
-def nb_print_plot(factors,response)
+def nb_print_plot(factors,response):
 	#Lets do this first for titles
 	#get the 10 fold cross info.
 
@@ -53,7 +53,7 @@ def nb_print_plot(factors,response)
 	#for auc
 	bin_response = label_binarize(response, classes=list(pred_probability))
 	pred_auc = roc_auc_score(bin_response,pred_probability,average="weighted")
-	print(" AUC:",pred_auc,"\nACC:",pred_accuracy)
+	print(" AUC:",pred_auc,"\n ACC:",pred_accuracy)
 
 	#now we have preditcted acc and predicted auc (and printed it.)
 	#now lets get graphs:
@@ -63,7 +63,7 @@ def nb_print_plot(factors,response)
 	fpr = dict()
 	roc_auc = dict()
 	for i in range(3):
-		fpr[i], tpr[i], _ = roc_curve(bin_response[:,i],pred_probability[:,i])
+		fpr[i], tpr[i], _ = roc_curve(bin_response[:,i],pred_probability.iloc[:,i])
 
 	#now to get the averaged curve I need to interpetation:
 

@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold
 #This gets accuracy and weighed AUC for all values of up to max k. which_k calls auc_acc to get the values for that
 #value of k.
 
-def which_k(factors,response,max_k=30):
+def knn_which_k(factors,response,max_k=30):
 	meterics = []
 	for i in range(1,max_k+1):
 		meterics += [auc_acc_cross(factors,response,i)]

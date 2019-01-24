@@ -9,30 +9,15 @@ import numpy as np
 ##########################################################################################
 ##########################################################################################
 
-def prob_cross(factors,response,k):
-	kf = KFold(n_splits=10)
-	kf.get_n_splits(factors)
-
-	kn = KNeighborsClassifier(n_neighbors=k)
-	
-	pp = np.ndarray(shape=(0,3))
-	for i,j in kf.split(factors):
-		kn.fit(factors.iloc[i,:],response.iloc[i])
-		pp = np.append(pp,kn.predict_proba(factors.iloc[j,:]),axis=0)
-
-	pp = pd.DataFrame(pp,columns=list(kn.classes_))
-	return pp
-
-
 def knn_plot_auc(factors,response,k):
-	pp = prob_cross(factors,response,k)
-	bin_response = label_binarize(response, classes=list(pp))
+	pred_probability = prob_cross(factors,response,k)
+	bin_response = label_binarize(response, classes=list(pred_probability))
 
 	tpr = dict()
 	fpr = dict()
 	roc_auc = dict()
 	for i in range(3):
-		fpr[i], tpr[i], _ = roc_curve(bin_response[:,i],pp.iloc[:,i])
+		fpr[i], tpr[i], _ = roc_curve(bin_response[:,i],pred_probability.iloc[:,i])
 
 	interp_tpr = [tpr[0], np.interp(fpr[0],fpr[1],tpr[1]), np.interp(fpr[0],fpr[2],tpr[2])]
 
@@ -60,40 +45,16 @@ def knn_plot_auc(factors,response,k):
 	plt.title(plot_title)
 	f1.show()
 
-#Plot acc and max AUC by k
-
-def knn_acc_cross(factors,response,k):
-	kn = KNeighborsClassifier(n_neighbors=k)
+def prob_cross(factors,response,k):
 	kf = KFold(n_splits=10)
 	kf.get_n_splits(factors)
 
-	acc = []
+	kn = KNeighborsClassifier(n_neighbors=k)
+	
+	pred_probability = np.ndarray(shape=(0,3))
 	for i,j in kf.split(factors):
 		kn.fit(factors.iloc[i,:],response.iloc[i])
-		pred = kn.predict(factors.iloc[j,:])
-		acc += [accuracy_score(response.iloc[j],pred)]
-	acc_m = sum(acc)/10
-	return(acc_m)
+		pred_probability = np.append(pred_probability,kn.predict_proba(factors.iloc[j,:]),axis=0)
 
-def which_k_plot(factors,response):
-	max_k = factors.shape[1]
-	weighed_auc = []
-	acc = []
-	for i in range(1,max_k+1):
-		pp_response = prob_cross(factors,response,i)
-		bin_response = label_binarize(response, classes=list(pp_response))
-
-		weighed_auc += [roc_auc_score(bin_response,pp_response,average="weighted")]
-		acc += [knn_acc_cross(factors,response,i)]
-
-	plot_title = response.name + " Weighed AUC and Accuracy by k"
-
-	k_list = [i+1 for i in range(max_k)]
-	f1 = plt.figure()
-	plt.plot(k_list,weighed_auc,label="Weighed AUC")
-	plt.plot(k_list,acc,label="Accuracy")
-	plt.xlabel('K Values')
-	plt.ylabel('Probability')
-	plt.legend(loc="lower right")
-	plt.title(plot_title)
-	f1.show()
+	pred_probability = pd.DataFrame(pred_probability,columns=list(kn.classes_))
+	return pred_probability
