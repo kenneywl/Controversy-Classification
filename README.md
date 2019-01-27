@@ -14,7 +14,7 @@ master.py : Calls all the other functions to get the results all in one place.
 agreement.py : Looks at the agreement of from the results of the Mechanical Turk.  
 agreement2.py : Looks at alternate ways to understand the info from Mech Turk.  
 cleandata.py : Cleans data. Adds Entropy and Standard Deviation as factors.  
-KNN3.py : Finds k for max accuracy and max weighed AUC. Calls functions from KNN_plot_func.py  
+KNN4.py : Finds k for max accuracy and max weighed AUC. Calls functions from KNN_plot_func.py  
 KNN_plot_func.py : Functions used for plotting KNN stuff.  
 NaiveBayes2.py : 10 fold cross and AUC graphs for Naive Bayes.  
 SVM.py : 10 fold cross for Support Vector Machines.  
