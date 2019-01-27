@@ -1,5 +1,5 @@
 import xlrd
-from math import log
+from math import log,sqrt
 import scipy.stats
 
 ti = xlrd.open_workbook("Titles.xlsx").sheet_by_index(0)
@@ -63,25 +63,46 @@ for i in range(len(scont)):
 # for i in range(len(tc)):
 # 	agt += [(tc[i]**2+tsc[i]**2+tnc[i]**2-20)/380]
 
-# meanagt = (sum(agt)/1000)
-# sumofps = (sum(tc)**2+sum(tsc)**2+sum(tnc)**2)/((20*1000)**2)
+# po = (sum(agt)/1000)
+# pe = (sum(tc)**2+sum(tsc)**2+sum(tnc)**2)/((20*1000)**2)
 
-# print((meanagt-sumofps)/(1-sumofps))
+# kappa = (po-pe)/(1-pe)
+# print("Kappa:", kappa)
 #Kappa ts: .036 super low.
-#We can see that these two are almost the same value:
-# print(meanagt,sumofps)
+
+# pe3 = (sum(tc)**3+sum(tsc)**3+sum(tnc)**3)/((20*1000)**3)
+# var = 2*(pe-(2*20-3)*pe**2+2*(20-2)*pe3)/(20*1000*(20-1)*(1-pe)**2)
+# se = 1.96*sqrt(var)
+# conf = [kappa-se,kappa+se]
+# print("95% Conf Interval:", conf)
+
+# Kappa: 0.03662505511683963
+# 95% Conf Interval: [0.032896316987151876, 0.04035379324652739]
+
 ########################################################
-#Fleis kappa for summaries:
+# Fleis kappa for summaries:
 # ags = []
-# for i in range(len(tc)):
+# for i in range(len(sc)):
 # 	ags += [(sc[i]**2+ssc[i]**2+snc[i]**2-20)/380]
 
-# meanags = (sum(ags)/1000)
-# sumofpss = (sum(sc)**2+sum(ssc)**2+sum(snc)**2)/((20*1000)**2)
+# po = (sum(ags)/1000)
+# pe = (sum(sc)**2+sum(ssc)**2+sum(snc)**2)/((20*1000)**2)
 
-# print((meanags-sumofpss)/(1-sumofpss))
-#Kappa ts: .139. better, but still low.
-#There is some agreement.
+# kappa = (po-pe)/(1-pe)
+# print("Kappa:", kappa)
+# # Kappa ts: .139. better, but still low.
+# # There is some agreement.
+# #We can do a quick stat test.
+
+# pe3 = (sum(sc)**3+sum(ssc)**3+sum(snc)**3)/((20*1000)**3)
+# var = 2*(pe-(2*20-3)*pe**2+2*(20-2)*pe3)/(20*1000*(20-1)*(1-pe)**2)
+# se = 1.96*sqrt(var)
+# conf = [kappa-se,kappa+se]
+# print("95% Conf Interval:", conf)
+
+# Kappa: 0.13908545051989496
+# 95% Conf Interval: [0.13259983939110698, 0.14557106164868294]
+
 ########################################################
 ########################################################
 #lets join them together element wise and see:

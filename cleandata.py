@@ -1,5 +1,6 @@
 import pandas as pd
 from math import sqrt,log
+from sklearn.preprocessing import RobustScaler
 
 #For the factors:
 fa = pd.read_excel("Factors.xlsx")
@@ -57,7 +58,8 @@ for i in range(len(tc)):
 
 sen = [i/20 for i in sen]
 
-titles = fa.assign(StandardDevaition = ssd,Entropy=sen)
+titles_disp = pd.DataFrame(data={"Entropy":sen})
+titles = fa
 
 #"titles" should be the factors used for each model. titles_r should
 #be the responses.
@@ -122,7 +124,8 @@ for i in range(len(sc)):
 
 sen = [i/20 for i in sen]
 
-summaries = fach_su.assign(StandardDevaition = ssd,Entropy=sen)
+summaries_disp = pd.DataFrame(data={"Entropy":sen})
+summaries = fach_su
 summaries_r = scont
 #There we go. Summaries are the factors, summaries_r is responses.
 
@@ -156,7 +159,20 @@ titles_r.index = range(titles_r.shape[0])
 summaries_r.name = "Summaries"
 titles_r.name = "Titles"
 
+# summaries.to_pickle("summaries_raw.pkl")
+# summaries_r.to_pickle("summaries_r_raw.pkl")
+# titles_r.to_pickle("titles_r_raw.pkl")
+# titles.to_pickle("titles_raw.pkl")
+
+#robust scaling causes every value (except NB) to increase, sometimes dramatically.
+#The output as it comes out here is optimal, as far as I am concerned.
+titles = pd.DataFrame(RobustScaler().fit_transform(titles),columns=list(titles))
+summaries = pd.DataFrame(RobustScaler().fit_transform(summaries),columns=list(summaries))
+
 #Lets pickle this for my other scripts.
+
+summaries_disp.to_pickle("summaries_disp.pkl")
+titles_disp.to_pickle("titles_disp.pkl")
 
 summaries.to_pickle("summaries.pkl")
 summaries_r.to_pickle("summaries_r.pkl")

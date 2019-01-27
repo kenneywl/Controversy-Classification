@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold
 #This gets accuracy and weighed AUC for all values of up to max k. which_k calls auc_acc to get the values for that
 #value of k.
 
-def knn_which_k(factors,response,max_k=30):
+def knn_which_k(factors,response,max_k=100):
 	meterics = []
 	for i in range(1,max_k+1):
 		meterics += [auc_acc_cross(factors,response,i)]
@@ -20,7 +20,7 @@ def knn_which_k(factors,response,max_k=30):
 	k_auc_max = auc.index(auc_max)+1
 	k_acc_max = acc.index(acc_max)+1
 
-	print(" K checked up to: ",max_k,"\n AUC max info:", k_auc_max, auc_max,"\n","Accuracy max info:", k_acc_max, acc_max)
+	print(" K checked up to: ",max_k,"\n AUC max info:", k_auc_max, auc_max,"\n","ACC max info:", k_acc_max, acc_max)
 
 def auc_acc_cross(factors,response,k):
 	kn = KNeighborsClassifier(n_neighbors=k)
