@@ -18,6 +18,7 @@ KNN3.py : Finds k for max accuracy and max weighed AUC. Calls functions from KNN
 KNN_plot_func.py : Functions used for plotting KNN stuff.
 NaiveBayes2.py : 10 fold cross and AUC graphs for Naive Bayes.
 SVM.py : 10 fold cross for Support Vector Machines.
+ChangeInEntropy.py : Calculation of KL divergence from summaries to titles.
 
 #The results from cleandata.py above.
 
@@ -25,6 +26,9 @@ summaries.pkl : pickeled cleaned predictors for summaries.
 summaries_r.pkl : pickled cleaned response for sumamries.
 titles.pkl : pickled cleaned predictors for titles.
 titles_r.pkl : pickled cleaned response for titles.
+
+summaries_disp.pkl : Entropy of the summaries responses.
+titles_disp.pkl : Entropy of the titles responses.
 
 #Extranous files.
 
