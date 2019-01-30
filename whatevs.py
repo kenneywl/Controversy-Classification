@@ -1,22 +1,9 @@
 import pandas as pd
-import numpy as np
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
+from math import sqrt,log
 from sklearn.preprocessing import RobustScaler
-from sklearn.model_selection import KFold
 
+#For the factors:
+fa = pd.read_excel("Factors.xlsx")
+fa_ndm = pd.DataFrame(fa)
 
-#Lets import our data:
-# summaries = pd.read_pickle("summaries.pkl")
-summaries_r = pd.read_pickle("summaries_r.pkl")
-# titles = pd.read_pickle("titles.pkl")
-# titles_r = pd.read_pickle("titles_r.pkl")
-
-# nn = np.empty(shape=(1000,3))
-
-# for i in range(1000):
-# 	nn[i,] = [1,2,3]
-
-# print(nn)
-
-print(list(np.unique(summaries_r)))
+print(fa_ndm.iloc[:,2:])

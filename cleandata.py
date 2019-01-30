@@ -5,6 +5,7 @@ from sklearn.preprocessing import RobustScaler
 #For the factors:
 fa = pd.read_excel("Factors.xlsx")
 fa = pd.DataFrame(fa)
+fa_ndm = fa.iloc[:,2:]
 
 #######################################################################
 #For the titles we don't have the result of majority voting.
@@ -129,8 +130,35 @@ summaries = fach_su
 summaries_r = scont
 #There we go. Summaries are the factors, summaries_r is responses.
 
+
+#Before we remove the unknowns, lets complile the indeces of the agreed upon responses.
+
+agreements_r = []
+dis = []
+for i in range(1000):
+	if summaries_r.iloc[i] == titles_r.iloc[i] and summaries_r.iloc[i] != "unk":
+		agreements_r += [summaries_r.iloc[i]]
+	else:
+		dis += [i]
+
+agreements_r = pd.Series(agreements_r)
+agreements = summaries.drop(dis)
+agreements_ndm = fa_ndm.drop(dis)
+
+#reindex
+
+agreements.index = range(agreements.shape[0])
+agreements_r.index = range(agreements.shape[0])
+agreements_ndm.index = range(agreements.shape[0])
+
+agreements_r.name = "Agreements"
+
+agreements_r.to_pickle("agreements_r.pkl")
+agreements.to_pickle("agreements.pkl")
+agreements_ndm.to_pickle("agreements_ndm.pkl")
+
 #We now remove the "unkowns" as we dont ahve any more data
-#to break the ties.
+#to break the ties. for the mains
 
 unknns_s = []
 unknns_t = []
@@ -142,17 +170,22 @@ for i in range(1000):
 
 summaries = summaries.drop(unknns_s)
 summaries_r = summaries_r.drop(unknns_s)
+summaries_ndm = fa_ndm.drop(unknns_s)
 
 titles = titles.drop(unknns_t)
 titles_r = titles_r.drop(unknns_t)
+titles_ndm = fa_ndm.drop(unknns_t)
 
 
 #reindex after the "drop" above.
 
 summaries.index = range(summaries.shape[0])
 summaries_r.index = range(summaries_r.shape[0])
+summaries_ndm.index = range(summaries_r.shape[0])
 titles.index = range(titles.shape[0])
 titles_r.index = range(titles_r.shape[0])
+titles_ndm.index = range(titles_r.shape[0])
+
 
 #Lets name the reponses (this will be used later.)
 
@@ -176,5 +209,7 @@ titles_disp.to_pickle("titles_disp.pkl")
 
 summaries.to_pickle("summaries.pkl")
 summaries_r.to_pickle("summaries_r.pkl")
+summaries_ndm.to_pickle("summaries_ndm.pkl")
 titles_r.to_pickle("titles_r.pkl")
 titles.to_pickle("titles.pkl")
+titles_ndm.to_pickle("titles_ndm.pkl")

@@ -8,6 +8,10 @@ summaries_r = pd.read_pickle("summaries_r.pkl")
 titles = pd.read_pickle("titles.pkl")
 titles_r = pd.read_pickle("titles_r.pkl")
 
+agreements = pd.read_pickle("agreements.pkl")
+agreements_r = pd.read_pickle("agreements_r.pkl")
+
+
 print("For the titles:")
 print("KNN:")
 knn_which_k(titles,titles_r)
@@ -24,26 +28,12 @@ knn_plot_auc(summaries,summaries_r,30)
 print("Naive Bayes:")
 nb_print_plot(summaries,summaries_r)
 
-#This is what the paper did:
-#Without robust scaling, k=30.
-
-# For the titles:
-# KNN:
-#  K checked up to:  30 
-#  AUC max info: 30 0.6537846111937079 
-#  ACC max info: 29 0.5599104143337066
-# Naive Bayes:
-#  AUC: 0.6806415034808792 
-#  ACC: 0.5587905935050392
-#
-# For the Summaries:
-# KNN:
-#  K checked up to:  30 
-#  AUC max info: 30 0.8088598393957359 
-#  ACC max info: 24 0.6723404255319149
-# Naive Bayes:
-#  AUC: 0.815540513880923 
-#  ACC: 0.6510638297872341
+print("For the agreements:")
+print("KNN:")
+knn_which_k(agreements,agreements_r)
+knn_plot_auc(agreements,agreements_r,11)
+print("Naive Bayes:")
+nb_print_plot(agreements,agreements_r)
 
 ###############################################################
 #And lets see what we can do:
@@ -69,4 +59,26 @@ nb_print_plot(summaries,summaries_r)
 #  AUC: 0.7641053116164848 
 #  ACC: 0.6202127659574468
 
-#From SVM.py I need to redo due to a change in summaries.
+# For the agreements:
+# KNN:
+#  K checked up to:  100 
+#  AUC max info: 10 0.7518674966075293 
+#  ACC max info: 11 0.6203703703703703
+# Naive Bayes:
+#  AUC: 0.8386246055424439 
+#  ACC: 0.6728395061728395
+
+#From SVM.py we get:
+
+# On linear Titles:
+# {'C': 0.015} ACC: 0.5768660054053314
+# On linear Summaries:
+# {'C': 0.275} ACC: 0.6918303128535432
+# On rbf Titles:
+# {'C': 16, 'gamma': 0.0004} ACC: 0.5768537953931212
+# On rbd Summaries:
+# {'C': 18, 'gamma': 0.0007} ACC: 0.6841890015690055
+# On sigmoid Titles:
+# {'C': 0.9, 'gamma': 0.0008} ACC: 0.5768793129467287
+# On sigmoid Summaries:
+# {'C': 11, 'gamma': 0.0015} ACC: 0.6661243571762506
