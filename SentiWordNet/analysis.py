@@ -32,44 +32,44 @@ cc = "Controversial"
 ##############################################################
 #Just naive bayes
 
-# from sklearn.naive_bayes import GaussianNB
-# from sklearn.model_selection import KFold
-# from sklearn.metrics import roc_auc_score, roc_curve, accuracy_score
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import KFold
+from sklearn.metrics import roc_auc_score, roc_curve, accuracy_score
 
-# factors = art.loc[:,['Pos Score','Neg Score']]
-# response = art.loc[:,'Response']
+factors = art.loc[:,['Pos Score','Neg Score']]
+response = art.loc[:,'Response']
 
-# nb = GaussianNB()
-# kf = KFold(n_splits=10)
-# kf.get_n_splits(factors)
+nb = GaussianNB()
+kf = KFold(n_splits=10)
+kf.get_n_splits(factors)
 
-# #for acc
-# pred_response = np.ndarray(shape=(0,))
-# #for auc
-# pred_probability = np.ndarray(shape=(0,2))
-# for i,j in kf.split(factors):
-# 	nb.fit(factors.iloc[i,:],response.iloc[i])
+#for acc
+pred_response = np.ndarray(shape=(0,))
+#for auc
+pred_probability = np.ndarray(shape=(0,2))
+for i,j in kf.split(factors):
+	nb.fit(factors.iloc[i,:],response.iloc[i])
 
-# 	pv = nb.predict(factors.iloc[j,:]) #predict the outcome
-# 	pp = nb.predict_proba(factors.iloc[j,:]) #predict the probabilities
+	pv = nb.predict(factors.iloc[j,:]) #predict the outcome
+	pp = nb.predict_proba(factors.iloc[j,:]) #predict the probabilities
 
-# 	pred_response = np.append(pred_response,pv) #apppend to the master list
-# 	pred_response = pd.DataFrame(pred_response)
+	pred_response = np.append(pred_response,pv) #apppend to the master list
+	pred_response = pd.DataFrame(pred_response)
 
-# 	pred_probability = np.append(pred_probability,pp,axis=0) #append to the master list
-# 	pred_probability = pd.DataFrame(pred_probability,columns=list(nb.classes_))
+	pred_probability = np.append(pred_probability,pp,axis=0) #append to the master list
+	pred_probability = pd.DataFrame(pred_probability,columns=list(nb.classes_))
 
 
-# pred_accuracy = accuracy_score(response,pred_response)
-# print(pred_accuracy)
+pred_accuracy = accuracy_score(response,pred_response)
+print(pred_accuracy)
 
-# pred_auc = roc_auc_score(response,pred_probability.iloc[:,1])
-# print(pred_auc)
+pred_auc = roc_auc_score(response,pred_probability.iloc[:,1])
+print(pred_auc)
 
-# fpr, tpr, _ = roc_curve(response,pred_probability.iloc[:,1], pos_label='not controversial')
+fpr, tpr, _ = roc_curve(response,pred_probability.iloc[:,1], pos_label='not controversial')
 
-# plt.plot(fpr,tpr)
-# plt.show()
+plt.plot(fpr,tpr)
+plt.show()
 
 ##############################################################################################
 # f1 = plt.figure(1)
@@ -92,8 +92,8 @@ cc = "Controversial"
 # f2.show()
 
 f3 = plt.figure(3)
-plt.hist(list(art_n['P/N Metric']),label=nc,density=True,alpha=.5)
-plt.hist(list(art_c['P/N Metric']),label=cc,density=True,alpha=.5)
+plt.hist(list(art_n['P/N Metric']),label=nc,density=False,alpha=.5)
+plt.hist(list(art_c['P/N Metric']),label=cc,density=False,alpha=.5)
 plt.title("Division Metric")
 plt.xlabel("Positive Score / Negative Score")
 plt.ylabel("Frequency")

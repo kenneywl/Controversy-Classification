@@ -27,8 +27,3 @@ nc = "Not Controversial n=" + str(art_n.shape[0])
 cc = "Controversial n=" + str(art_c.shape[0])
 
 ######################################################################
-
-def pdf(vec,a1,a2,b0)
-
-
-integrate.quad()
