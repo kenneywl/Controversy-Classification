@@ -1,19 +1,24 @@
 from single_document import swn_single
 import pandas as pd
 
-articles_c = pd.read_pickle("articles_c.pkl")
+articles = pd.read_pickle("articles2.pkl")
+su = pd.read_excel("Summaries.xlsx")
 
 swn_metric = pd.DataFrame()
-errors_ind = []
-for i in range(articles_c.shape[0]):
-	data = swn_single(articles_c.iloc[i,1])
-	data['Response'] = articles_c.iloc[i,2]
-	st = pd.DataFrame(data=data,index=[i])
-	if st.iloc[0,2] != 0:
-		swn_metric = swn_metric.append(st)
+tt = 'Timeout'
+for i in articles.index:
+	if articles['Title'].loc[i] == 'Timeout':
+		data = {"Word Count": tt, "P/N Metric":tt, "PN Metric": tt, "P+N Metric": tt, "P-N Metric": tt, "Pos Score":tt,"Neg Score": tt}
 	else:
-		errors_ind += [i]
-	print(i)
+		title_body = articles.loc[i,'Body'] + articles.loc[i,'Title'] + su.loc[i,'Summary']
+		data = swn_single(title_body)
 
-swn_metric.to_pickle("articles_m.pkl")
-print("Done. There were",len(errors_ind),"errors")
+	data['Response'] = articles.loc[i,'Response']
+	data['Title_Closeness'] = articles.loc[i,'Title_Closeness']
+	data['Title'] = articles.loc[i,'Title']
+	data['Body'] = articles.loc[i,'Body']
+	st = pd.DataFrame(data=data,index=[i])
+	swn_metric = swn_metric.append(st)
+	print(999-i)
+
+swn_metric.to_pickle("art_m.pkl")

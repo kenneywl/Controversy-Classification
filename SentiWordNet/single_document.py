@@ -20,10 +20,8 @@ def swn_single(document):
 			#The following makes sure that sentwordnet gives us something!
 			if 0 < len(score):
 				pos_score, neg_score = zip(*score)
-				pos_score = pos_score[0]
-				neg_score = neg_score[0]
-				# pos_score = sum(pos_score)/len(word_sysnets)
-				# neg_score = sum(neg_score)/len(word_sysnets)
+				pos_score = sum(pos_score)/len(word_sysnets)
+				neg_score = sum(neg_score)/len(word_sysnets)
 				word_ave += [(pos_score,neg_score)]
 	#Now the average for all words:
 	try:
@@ -31,14 +29,31 @@ def swn_single(document):
 		pos_score = sum(pos_score)/len(pos_score)
 		neg_score = sum(neg_score)/len(neg_score)
 
-		rel_scores = (pos_score/(pos_score+neg_score),neg_score/(pos_score+neg_score))
-		entropy = -(rel_scores[0]*log(rel_scores[0])+rel_scores[1]*log(rel_scores[1]))/log(2)
-
-		sum_of = pos_score+neg_score
-		absol_diff = abs(pos_score-neg_score)
+		docu_ave = {"Word Count": len(text_t), "P/N Metric": pos_score/neg_score, "PN Metric": pos_score*neg_score, "P+N Metric": pos_score + neg_score, "P-N Metric": pos_score - neg_score, "Pos Score": pos_score,"Neg Score": neg_score}
 	except:
-		entropy, sum_of, absol_diff, pos_score, neg_score = (0,0,0,0,0)
-
-	docu_ave = {"Metric": pos_score*neg_score, "Relative Entropy": entropy,
-	"Sum of Scores": sum_of, "Absolute Difference": absol_diff, "Pos Score": pos_score,"Neg Score": neg_score}
+		tt = "Div/Log Error"
+		docu_ave = {"Word Count": len(text_t), "P/N Metric": tt, "PN Metric": tt, "P+N Metric": tt, "P-N Metric": tt, "Pos Score": tt,"Neg Score": tt}
+	
 	return(docu_ave)
+
+# with open("test_ncont.txt") as file:
+# 	ncont = file.read()
+
+# with open("test_cont.txt") as file:
+# 	cont = file.read()
+
+# with open("test_file.txt") as file:
+# 	file1 = file.read()
+
+# with open("test_file_2.txt") as file:
+# 	file2 = file.read()
+
+
+# print("Company committed to providing electricity to rural areas")
+# print(swn_single(ncont))
+# print("Hometown Dilian")
+# print(swn_single(file2))
+# print("Company's sexist ads offensive and illegal")
+# print(swn_single(cont))
+# print("1000 people murdered by police")
+# print(swn_single(file1))

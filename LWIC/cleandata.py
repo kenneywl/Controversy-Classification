@@ -7,6 +7,9 @@ fa = pd.read_excel("Factors.xlsx")
 fa = pd.DataFrame(fa)
 fa_ndm = fa.iloc[:,2:]
 
+print(list(fa_ndm))
+
+'''
 #######################################################################
 #For the titles we don't have the result of majority voting.
 #Note I used iss for "controvesial", som for "somewhat" and not for
@@ -213,3 +216,4 @@ summaries_ndm.to_pickle("summaries_ndm.pkl")
 titles_r.to_pickle("titles_r.pkl")
 titles.to_pickle("titles.pkl")
 titles_ndm.to_pickle("titles_ndm.pkl")
+'''
