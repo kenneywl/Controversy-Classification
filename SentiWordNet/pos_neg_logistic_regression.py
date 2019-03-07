@@ -3,6 +3,8 @@ import statsmodels.api as sm
 import numpy as np
 from plot_confusion_matrix import *
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, average_precision_score
+from sklearn.preprocessing import RobustScaler
+
 
 pd.options.display.float_format = '{:20,.3f}'.format
 
@@ -11,7 +13,6 @@ test_ind = pd.read_pickle("test_ind.pkl").tolist()
 
 x = pd.read_pickle('art_m.pkl')
 y = x.iloc[:,7]
-
 
 def upper(data):
 	if data == 'controversial':
@@ -64,11 +65,13 @@ y_true = pd.Series(y_true_z,index=y_true.index)
 #################################################################
 #analysis
 
-intercept = [1.0 for i in range(x_train.shape[0])]
-x_train = x_train.assign(Intercept=intercept)
-cols = ["Intercept","Word Count","Neg Score","Pos Score",'P/N Metric']
+cols = ["Word Count","Neg Score","Pos Score",'P/N Metric']
 x_train = x_train.loc[:,cols]
 x_train = x_train.astype(float)
+
+# x_train = pd.DataFrame(RobustScaler().fit_transform(x_train),columns=list(x_train),index=x_train.index)
+intercept = [1.0 for i in range(x_train.shape[0])]
+x_train = x_train.assign(Intercept=intercept)
 
 logit = sm.Logit(y_train,x_train)
 result = logit.fit(method = 'powell')
@@ -77,11 +80,11 @@ result = logit.fit(method = 'powell')
 
 # print(result.summary(alpha=.05).as_latex())
 
-
-intercept = [1.0 for i in range(x_test.shape[0])]
-x_test = x_test.assign(Intercept=intercept)
 x_test = x_test.loc[:,cols]
 x_test = x_test.astype(float)
+# x_test = pd.DataFrame(RobustScaler().fit_transform(x_test),columns=list(x_test),index=x_test.index)
+intercept = [1.0 for i in range(x_test.shape[0])]
+x_test = x_test.assign(Intercept=intercept)
 y_proba = result.predict(x_test)
 
 # roc_average = roc_auc_score(y_true_z,y_proba)
@@ -111,7 +114,7 @@ def average_meterics(x):
 			d += 1
 
 	bb = beta.pdf(x,2,2)
-	ans = bb*d
+	ans = bb*b
 	return(ans)
 
 ss, _ = quad(average_meterics,0,1,limit=50)

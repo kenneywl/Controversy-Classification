@@ -7,7 +7,6 @@ from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, average_pr
 
 from sklearn.naive_bayes import GaussianNB
 
-
 pd.options.display.float_format = '{:20,.3f}'.format
 
 train_ind = pd.read_pickle("train_ind.pkl").tolist()
@@ -71,15 +70,15 @@ nb = GaussianNB()
 nb.fit(x_train,y_train)
 
 
-y_proba = nb.predict_proba(x_test)
-print(y_proba.shape[0])
+y_proba_zipped = nb.predict_proba(x_test)
+_, y_proba = zip(*y_proba_zipped)
+y_proba = pd.Series(y_proba)
 
 from scipy.integrate import quad
 from scipy.stats import beta
 
 def average_meterics(x):
-	pred = np.array(y_proba[1] > x, dtype=int)
-	# print(len(pred))
+	pred = np.array(y_proba > x, dtype=int)
 	a,b,c,d = 0,0,0,0
 	for i,j in zip(pred,y_true):
 		if i==0 and j==0:
@@ -92,8 +91,8 @@ def average_meterics(x):
 			d += 1
 
 	bb = beta.pdf(x,2,2)
-	ans = bb*a
+	ans = bb*b
 	return(ans)
 
-ss, _ = quad(average_meterics,0,1,limit=50)
+ss, _ = quad(average_meterics,0,1,limit=100)
 print(ss)
