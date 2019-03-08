@@ -11,23 +11,16 @@ from random import shuffle
 art = pd.read_pickle('art.pkl')
 su = pd.read_excel("Summaries.xlsx",nrows=1000)
 
-index = []
-for i in range(1000):
-	cont = su.loc[i,'Classification'] == 'controversial'
-	ncont = su.loc[i,'Classification'] == 'not controversial'
-	if cont or ncont:
-		index += [i]
+su.index = art.index
 
-print(len(index))
 
-'''
-su = su.iloc[index]
-art = art.iloc[index]
+def resp(row):
+	a = row['controversial']
+	b = row['not controversial']
+	ans = a-b
+	return(ans)
 
-su.index = index
-art.index = index
-
-art['response'] = su["Classification"]
+art['response'] = su.apply(resp,axis=1)
 
 def clean_lemma(x):
 	def clean2(text):
@@ -48,25 +41,27 @@ def clean_lemma(x):
 	li = [Word(x).lemmatize() for x in li]
 	return(li)
 
-print(art.index)
 
 labeled_sentances = []
 for index,row in art.iterrows():
 	try:
 		cleaned = clean_lemma(row['content'])
-		tags = [row['response'] + "_" + str(index)]
+		tags = [str(row['response']) + "_" + str(index)]
 		labeled_sentances.append(TaggedDocument(words=cleaned,tags=tags))
 	except:
+		print('Error Index:',index)
 		pass
 
 model = Doc2Vec(min_count=2, window=6, vector_size=100, sample=1e-4, negative=5, workers=8)
 
+
+
+
 model.build_vocab(labeled_sentances)
 
-for epochs in range(10):
+for epochs in range(20):
 	shuffle(labeled_sentances)
 	model.train(labeled_sentances,total_examples=model.corpus_count,epochs=model.epochs)
 	print("Epoch:",epochs," Finished")
 
-model.save("doument_model.d2v")
-'''
+model.save("doument_model_continuous.d2v")

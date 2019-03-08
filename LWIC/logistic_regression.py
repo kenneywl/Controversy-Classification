@@ -85,37 +85,37 @@ y_true = y.iloc[test_ind]
 
 
 ####################################################################
-# import statsmodels.api as sm
-# import numpy as np
+import statsmodels.api as sm
+import numpy as np
 
-# y_train_z = []
-# for i in y_train:
-# 	if i == "Not Controversial":
-# 		y_train_z += [0]
-# 	else:
-# 		y_train_z += [1]
+y_train_z = []
+for i in y_train:
+	if i == "Not Controversial":
+		y_train_z += [0]
+	else:
+		y_train_z += [1]
 
-# y_train_z = pd.Series(y_train_z,index=y_train.index)
+y_train_z = pd.Series(y_train_z,index=y_train.index)
 
-# intercept = [1.0 for i in range(580)]
-# x_train = x_train.assign(intercept=intercept)
+intercept = [1.0 for i in range(x.shape[0])]
+x_train = x_train.assign(intercept=intercept)
 
-# logit = sm.Logit(y_train_z,x_train)
-# result = logit.fit(method = 'powell')
+logit = sm.Logit(y_train_z,x_train)
+result = logit.fit(method = 'powell')
 
-# ranks = result.pvalues.rank().astype(int).apply(lambda x: x-1).tolist()
-# sums = result.summary2().tables[1]
+ranks = result.pvalues.rank().astype(int).apply(lambda x: x-1).tolist()
+sums = result.summary2().tables[1]
 
-# rank_in = []
-# for i in range(len(ranks)):
-# 	rank_in += [(i,ranks[i])]
+rank_in = []
+for i in range(len(ranks)):
+	rank_in += [(i,ranks[i])]
 
-# rank_in.sort(key=lambda x: x[1])
+rank_in.sort(key=lambda x: x[1])
 
-# pr_rank, _ = zip(*rank_in)
-# pr_rank = list(pr_rank)
-# print(sums.iloc[pr_rank,:])
-# print(result.summary().as_latex())
+pr_rank, _ = zip(*rank_in)
+pr_rank = list(pr_rank)
+result2 = sm.Logit(y_train_z,x_train.iloc[:,pr_rank]).fit(method = 'powell')
+print(result2.summary())
 
 
 # intercept = [1.0 for i in range(y_true.shape[0])]
