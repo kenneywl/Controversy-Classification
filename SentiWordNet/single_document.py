@@ -22,6 +22,8 @@ def swn_single(document):
 				pos_score, neg_score = zip(*score)
 				pos_score = sum(pos_score)/len(word_sysnets)
 				neg_score = sum(neg_score)/len(word_sysnets)
+
+				
 				word_ave += [(pos_score,neg_score)]
 	#Now the average for all words:
 	try:

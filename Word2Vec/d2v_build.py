@@ -5,7 +5,6 @@ from gensim.models import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from nltk.corpus import stopwords
 import unicodedata
-from gensim.test.utils import get_tmpfile
 from random import shuffle
 
 art = pd.read_pickle('art.pkl')
