@@ -2,6 +2,7 @@ import pandas as pd
 from nltk.corpus import sentiwordnet as swn, stopwords
 from nltk.tokenize import RegexpTokenizer
 from math import log
+from clean import clean
 
 
 #The following takes a single string and processes it:
@@ -23,7 +24,6 @@ def swn_single(document):
 				pos_score = sum(pos_score)/len(word_sysnets)
 				neg_score = sum(neg_score)/len(word_sysnets)
 
-				
 				word_ave += [(pos_score,neg_score)]
 	#Now the average for all words:
 	try:
@@ -31,10 +31,10 @@ def swn_single(document):
 		pos_score = sum(pos_score)/len(pos_score)
 		neg_score = sum(neg_score)/len(neg_score)
 
-		docu_ave = {"Word Count": len(text_t), "P/N Metric": pos_score/neg_score, "PN Metric": pos_score*neg_score, "P+N Metric": pos_score + neg_score, "P-N Metric": pos_score - neg_score, "Pos Score": pos_score,"Neg Score": neg_score}
+		docu_ave = {"Word Count": len(text_t), "P/N Metric": pos_score/neg_score, "PN Metric": pos_score*neg_score, "P+N Metric": pos_score + neg_score, "Abs(P-N) Metric": abs(pos_score - neg_score), "Pos Score": pos_score,"Neg Score": neg_score}
 	except:
 		tt = "Div/Log Error"
-		docu_ave = {"Word Count": len(text_t), "P/N Metric": tt, "PN Metric": tt, "P+N Metric": tt, "P-N Metric": tt, "Pos Score": tt,"Neg Score": tt}
+		docu_ave = {"Word Count": len(text_t), "P/N Metric": tt, "PN Metric": tt, "P+N Metric": tt, "Abs(P-N) Metric": tt, "Pos Score": tt,"Neg Score": tt}
 	
 	return(docu_ave)
 

@@ -13,7 +13,10 @@ from nltk.corpus import sentiwordnet as swn
 
 art = pd.read_pickle("art.pkl")
 su = pd.read_excel("Summaries.xlsx",nrows=1000)
-su.index = art.index
+idd = [i-1 for i in su['DB ID']]
+art = art.loc[idd,:]
+art.index = idd
+su.index = idd
 
 ####################################################################################
 #####################################################################################
@@ -25,7 +28,7 @@ su.index = art.index
 # 	if k % 100 ==0:
 # 		print(k)
 # 	try:
-# 		body = str(row['content'])+str(row['title'])+str(row['summary'])
+# 		body = str(row['content'])+str(row['title'])
 # 		cleaned = clean(body)
 # 		labeled_sentances.append(cleaned)
 # 	except:
@@ -61,16 +64,15 @@ def single_doc(doc_tokenized):
 
 			token_id = dct.token2id[word]
 			unique_doc_frequency = 1000-dct.dfs[token_id]
-			total_doc_freq += unique_doc_frequency
 
-			# pos_syn_score *= unique_doc_frequency
-			# neg_syn_score *= unique_doc_frequency
+			pos_syn_score *= unique_doc_frequency
+			neg_syn_score *= unique_doc_frequency
 
 		pos_score += pos_syn_score
 		neg_score += neg_syn_score
 
-	pos_score /= len(doc_tokenized)#*total_doc_freq
-	neg_score /= len(doc_tokenized)#*total_doc_freq
+	pos_score /= len(doc_tokenized)
+	neg_score /= len(doc_tokenized)
 
 	docu_ave = {"Word Count": len(doc_tokenized),"P+N Metric": pos_score + neg_score, "Abs(P-N) Metric": abs(pos_score - neg_score), "Pos Score": pos_score,"Neg Score": neg_score}
 
@@ -79,10 +81,10 @@ def single_doc(doc_tokenized):
 swn_metric = pd.DataFrame()
 k = 1001
 for i in art.index:
-	title_body = clean(art.loc[i,'content'])
+	title_body = clean(art.loc[i,'content'] + art.loc[i,'title'])
 	data = single_doc(title_body)
 
-	data['Response Num'] = su.loc[i,'controversial']-su.loc[i,'not controversial']
+	data['Response'] = su.loc[i,'controversial']-su.loc[i,'not controversial']
 	data['Body'] = art.loc[i,'content']
 	st = pd.DataFrame(data=data,index=[i])
 	swn_metric = swn_metric.append(st)
