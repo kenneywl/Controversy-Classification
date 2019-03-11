@@ -1,21 +1,16 @@
 import pandas as pd
 
-art = pd.read_csv("articles_official.csv",usecols=[0,4,5,6,7,10,15]).iloc[:7844]
+# art = pd.read_csv("articles_official.csv",usecols=[0,4,5,6,7,10,15]).iloc[:7844]
 
-art.to_pickle("art_off.pkl")
+# art.to_pickle("art_off.pkl")
 
 art = pd.read_pickle("art_off.pkl")
-art_id = pd.read_excel("Titles.xlsx",usecols=[0,1])
-rows = [i-1 for i in art_id['Art_Id']]
+art_id = pd.read_excel("Summaries.xlsx",usecols=[0,1],nrows=1000)
+rows = [i-1 for i in art_id['DB ID']]
 
-print(rows.sort())
+art.loc[rows,:].to_pickle("art.pkl")
 
-# art.loc[rows].to_pickle("art.pkl")
 
-# su = pd.read_excel("Summaries.xlsx",nrows=1000)
-# idd = [i-1 for i in su['DB ID']]
-# su.index = idd
-# art_all = art.loc[idd,:]
 
 # from single_document import swn_single
 

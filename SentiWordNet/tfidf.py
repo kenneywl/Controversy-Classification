@@ -14,6 +14,10 @@ from nltk.corpus import sentiwordnet as swn
 art = pd.read_pickle("art.pkl")
 su = pd.read_excel("Summaries.xlsx",nrows=1000)
 su.index = art.index
+
+####################################################################################
+#####################################################################################
+#make dic
 # labeled_sentances = []
 # k = 1001
 # for index,row in art.iterrows():
@@ -21,7 +25,8 @@ su.index = art.index
 # 	if k % 100 ==0:
 # 		print(k)
 # 	try:
-# 		cleaned = clean(row['content'])
+# 		body = str(row['content'])+str(row['title'])+str(row['summary'])
+# 		cleaned = clean(body)
 # 		labeled_sentances.append(cleaned)
 # 	except:
 # 		print('Error Index:',index)
@@ -35,17 +40,16 @@ su.index = art.index
 ####################################################################################
 ####################################################################################
 
-news = pd.read_pickle("art.pkl")
+
 dct = SaveLoad.load("doc.dic")
 
-def single_doc(doc_tokenized,index):
+def single_doc(doc_tokenized):
 
 	#process a single word
 	pos_score, neg_score = 0,0
 	total_doc_freq = 0
 	for word in doc_tokenized:
 		word_synsets = list(swn.senti_synsets(word))
-
 		pos_syn_score, neg_syn_score = 0,0
 		if len(word_synsets) != 0:
 			for syn in word_synsets:
@@ -54,27 +58,21 @@ def single_doc(doc_tokenized,index):
 
 			pos_syn_score /= len(word_synsets)
 			neg_syn_score /= len(word_synsets)
-			
+
 			token_id = dct.token2id[word]
 			unique_doc_frequency = 1000-dct.dfs[token_id]
 			total_doc_freq += unique_doc_frequency
 
-			pos_syn_score *= unique_doc_frequency
-			neg_syn_score *= unique_doc_frequency
+			# pos_syn_score *= unique_doc_frequency
+			# neg_syn_score *= unique_doc_frequency
 
 		pos_score += pos_syn_score
 		neg_score += neg_syn_score
 
-	pos_score /= len(doc_tokenized)*total_doc_freq
-	neg_score /= len(doc_tokenized)*total_doc_freq
+	pos_score /= len(doc_tokenized)#*total_doc_freq
+	neg_score /= len(doc_tokenized)#*total_doc_freq
 
-	try:
-		docu_ave = {"Word Count": len(doc_tokenized), "PN Metric": pos_score*neg_score,"P/N Metric": pos_score/neg_score, "P+N Metric": pos_score + neg_score, "Abs(P-N) Metric": abs(pos_score - neg_score), "Pos Score": pos_score,"Neg Score": neg_score}
-	except:
-		print("Error ind:",index)
-		print(doc_tokenized)
-		err = "Error"
-		docu_ave = {"Word Count": len(doc_tokenized), "PN Metric": err,"P/N Metric": err, "P+N Metric": err, "P-N Metric": err, "Pos Score": err,"Neg Score": err}
+	docu_ave = {"Word Count": len(doc_tokenized),"P+N Metric": pos_score + neg_score, "Abs(P-N) Metric": abs(pos_score - neg_score), "Pos Score": pos_score,"Neg Score": neg_score}
 
 	return(docu_ave)
 
@@ -82,7 +80,7 @@ swn_metric = pd.DataFrame()
 k = 1001
 for i in art.index:
 	title_body = clean(art.loc[i,'content'])
-	data = single_doc(title_body,i)
+	data = single_doc(title_body)
 
 	data['Response Num'] = su.loc[i,'controversial']-su.loc[i,'not controversial']
 	data['Body'] = art.loc[i,'content']
