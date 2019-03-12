@@ -50,40 +50,52 @@ def single_doc(doc_tokenized):
 	tags = pos_tag(doc_tokenized)
 
 	pos_score, neg_score = 0,0
-	total_doc_freq = 0
 	for t in tags:
 		word = t[0]
 		pos = t[1][0]
 
-		word_synsets = list(swn.senti_synsets(word))
-		print(word_synsets)
-		break
-		# pos_syn_score, neg_syn_score = 0, 0
-		# if len(word_synsets) != 0:
-		# 	for syn in word_synsets:
-		# 		pos_syn_score += syn.pos_score()
-		# 		neg_syn_score += syn.neg_score()
+		if pos == 'J': 
+			part = 'a'
+		elif pos == 'N': 
+			part = 'n'
+		elif pos == 'R':
+			part = 'r'
+		elif pos == 'V':
+			part = 'v'
+		else:
+			part = "average"
 
-	# 		pos_syn_score /= len(word_synsets)
-	# 		neg_syn_score /= len(word_synsets)
+		if part == "average":
+			word_synsets = list(swn.senti_synsets(word))
+			pos_syn_score, neg_syn_score = 0, 0
+			if len(word_synsets) != 0:
+				for syn in word_synsets:
+					pos_syn_score += syn.pos_score()
+					neg_syn_score += syn.neg_score()
 
-	# 		token_id = dct.token2id[word]
-	# 		unique_doc_freq = 1000-dct.dfs[token_id]
-	# 		total_doc_freq += unique_doc_freq
+				pos_syn_score /= len(word_synsets)
+				neg_syn_score /= len(word_synsets)
+		else:
+			word_synsets = [swn.senti_synsets(word,part)]
+			pos_syn_score = word_synsets.pos_score()
+			neg_syn_score = word_synsets.neg_score()
 
-	# 		pos_syn_score *= unique_doc_freq
-	# 		neg_syn_score *= unique_doc_freq
+		token_id = dct.token2id[word]
+		unique_doc_freq = 1000-dct.dfs[token_id]
 
-	# 	pos_score += pos_syn_score
-	# 	neg_score += neg_syn_score
+		pos_syn_score *= unique_doc_freq
+		neg_syn_score *= unique_doc_freq
 
-	# pos_score /= len(doc_tokenized)
-	# neg_score /= len(doc_tokenized)
+		pos_score += pos_syn_score
+		neg_score += neg_syn_score
 
-	# docu_ave = {"Word Count": len(doc_tokenized),"P+N Metric": pos_score + neg_score, "Abs(P-N) Metric": abs(pos_score - neg_score), \
-	#              "Pos Score": pos_score,"Neg Score": neg_score}
+	pos_score /= len(doc_tokenized)
+	neg_score /= len(doc_tokenized)
 
-	# return(docu_ave)
+	docu_ave = {"Word Count": len(doc_tokenized),"P+N Metric": pos_score + neg_score, "Abs(P-N) Metric": abs(pos_score - neg_score), \
+	             "Pos Score": pos_score,"Neg Score": neg_score}
+
+	return(docu_ave)
 
 # swn_metric = pd.DataFrame()
 # k = 1001
