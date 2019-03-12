@@ -40,13 +40,13 @@ print(model.summary())
 
 # model = sm.OLS(y.iloc[train_ind],x.iloc[train_ind,]).fit()
 # print(model.summary())
-predict = model.predict(x.iloc[test_ind])
+# predict = model.predict(x.iloc[test_ind])
 
 # from scipy.integrate import quad
 # from scipy.stats import beta
 
-trans_pred = predict.apply(lambda x: (x+20)/40)
-trans_true = y.iloc[test_ind].apply(lambda x: 1 if x>0 else 0)
+# trans_pred = predict.apply(lambda x: (x+20)/40)
+# trans_true = y.iloc[test_ind].apply(lambda x: 1 if x>0 else 0)
 
 # def average_meterics(x):
 # 	pred = np.array(trans_pred > x, dtype=int)

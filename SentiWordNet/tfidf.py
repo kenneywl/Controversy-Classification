@@ -107,7 +107,7 @@ for i in art.index:
 	except Exception as error:
 		print("Error:", error,"\n","Error ind:",i)
 
-	data['Response'] = su.loc[i,'controversial']-su.loc[i,'not controversial']
+	data['Response'] = (su.loc[i,'controversial']-su.loc[i,'not controversial'])
 	data['Body'] = art.loc[i,'content']
 	st = pd.DataFrame(data=data,index=[i])
 	swn_metric = swn_metric.append(st)
