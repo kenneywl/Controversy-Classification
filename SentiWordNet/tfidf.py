@@ -67,18 +67,18 @@ def single_doc(doc_tokenized):
 
 		if part == "average":
 			word_synsets = list(swn.senti_synsets(word))
-			pos_syn_score, neg_syn_score = 0, 0
-			if len(word_synsets) != 0:
-				for syn in word_synsets:
-					pos_syn_score += syn.pos_score()
-					neg_syn_score += syn.neg_score()
+		else:
+			word_synsets = swn.senti_synsets(word,part)
+
+		pos_syn_score, neg_syn_score = 0, 0
+		if word_synsets == True: #an empty list is false!
+			for syn in word_synsets:
+				print(word_synsets)
+				pos_syn_score += syn.pos_score()
+				neg_syn_score += syn.neg_score()
 
 				pos_syn_score /= len(word_synsets)
 				neg_syn_score /= len(word_synsets)
-		else:
-			word_synsets = [swn.senti_synsets(word,part)]
-			pos_syn_score = word_synsets.pos_score()
-			neg_syn_score = word_synsets.neg_score()
 
 		token_id = dct.token2id[word]
 		unique_doc_freq = 1000-dct.dfs[token_id]
@@ -119,4 +119,4 @@ def single_doc(doc_tokenized):
 
 title_body = clean(str(art.loc[53,'title']) + " " + str(art.loc[53,'content']))
 title_body = word_tokenize(title_body)
-single_doc(title_body)
+print(single_doc(title_body))
