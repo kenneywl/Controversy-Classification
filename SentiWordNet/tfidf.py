@@ -65,58 +65,58 @@ def single_doc(doc_tokenized):
 		else:
 			part = "average"
 
+		part = "average"
+
 		if part == "average":
 			word_synsets = list(swn.senti_synsets(word))
 		else:
 			word_synsets = swn.senti_synsets(word,part)
 
 		pos_syn_score, neg_syn_score = 0, 0
-		if word_synsets == True: #an empty list is false!
-			for syn in word_synsets:
-				print(word_synsets)
-				pos_syn_score += syn.pos_score()
-				neg_syn_score += syn.neg_score()
+		for syn in word_synsets:
+			pos_syn_score += syn.pos_score()
+			neg_syn_score += syn.neg_score()
 
-				pos_syn_score /= len(word_synsets)
-				neg_syn_score /= len(word_synsets)
+		length = len(list(word_synsets))
+		if length == 0: length = 1
+
+		pos_syn_score /= length
+		neg_syn_score /= length
 
 		token_id = dct.token2id[word]
 		unique_doc_freq = 1000-dct.dfs[token_id]
 
-		pos_syn_score *= unique_doc_freq
-		neg_syn_score *= unique_doc_freq
-
-		pos_score += pos_syn_score
-		neg_score += neg_syn_score
+		pos_score += pos_syn_score*unique_doc_freq
+		neg_score += neg_syn_score*unique_doc_freq
 
 	pos_score /= len(doc_tokenized)
 	neg_score /= len(doc_tokenized)
 
-	docu_ave = {"Word Count": len(doc_tokenized),"P+N Metric": pos_score + neg_score, "Abs(P-N) Metric": abs(pos_score - neg_score), \
-	             "Pos Score": pos_score,"Neg Score": neg_score}
+	docu_ave = {"Word_Count": len(doc_tokenized),"P+N_Metric": pos_score + neg_score, "Absolute_Diff": abs(pos_score - neg_score), \
+	             "Pos_Score": pos_score,"Neg_Score": neg_score, "PN_Metric": pos_score*neg_score}
 
 	return(docu_ave)
 
-# swn_metric = pd.DataFrame()
-# k = 1001
-# for i in art.index:
-# 	title_body = clean(str(art.loc[i,'title']) + " " + str(art.loc[i,'content']))
-# 	title_body = word_tokenize(title_body)
-# 	try:
-# 		data = single_doc(title_body)
-# 	except Exception as error:
-# 		print("Error:", error,"\n","Error ind:",i)
+swn_metric = pd.DataFrame()
+k = 1001
+for i in art.index:
+	title_body = clean(str(art.loc[i,'title']) + " " + str(art.loc[i,'content']))
+	title_body = word_tokenize(title_body)
+	try:
+		data = single_doc(title_body)
+	except Exception as error:
+		print("Error:", error,"\n","Error ind:",i)
 
-# 	data['Response'] = su.loc[i,'controversial']-su.loc[i,'not controversial']
-# 	data['Body'] = art.loc[i,'content']
-# 	st = pd.DataFrame(data=data,index=[i])
-# 	swn_metric = swn_metric.append(st)
-# 	k -= 1
-# 	if k % 100 == 0:
-# 		print(k)
+	data['Response'] = su.loc[i,'controversial']-su.loc[i,'not controversial']
+	data['Body'] = art.loc[i,'content']
+	st = pd.DataFrame(data=data,index=[i])
+	swn_metric = swn_metric.append(st)
+	k -= 1
+	if k % 100 == 0:
+		print(k)
 
-# swn_metric.to_pickle("art_idf_m.pkl")
+swn_metric.to_pickle("art_idf_m.pkl")
 
-title_body = clean(str(art.loc[53,'title']) + " " + str(art.loc[53,'content']))
-title_body = word_tokenize(title_body)
-print(single_doc(title_body))
+# title_body = clean(str(art.loc[53,'title']) + " " + str(art.loc[53,'content']))
+# title_body = word_tokenize(title_body)
+# print(single_doc(title_body))

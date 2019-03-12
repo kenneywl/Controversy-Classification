@@ -1,11 +1,8 @@
-from gensim.corpora import Dictionary
 
-dataset = ['driving car ',
-           'drive car carefully',
-           'student and university']
+from nltk.corpus import sentiwordnet as swn
 
-dataset = [d.split() for d in dataset]
-print(dataset)
+k = swn.senti_synsets('try')
+print(len(k))
 
-vocab = Dictionary(dataset)
-print(vocab)
+for i in k:
+	print(i.pos_score())
