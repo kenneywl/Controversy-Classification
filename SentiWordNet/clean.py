@@ -15,10 +15,6 @@ def clean(x):
 	x = x.lower()
 	x = unicodedata.normalize("NFKD", x)
 	x = clean2(x)
-	x = x.replace("chinadaily", " ")
-	x = x.replace("page", " ")
-
 	li = x.split()
 	li = [x for x in li if len(x) > 2]
-	li = [x for x in li if not x in stopwords.words('english')]
 	return(li)
